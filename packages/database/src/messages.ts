@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@workspace/database";
+import { getAgentById, prisma } from "@workspace/database";
 import { Role } from "../generated/prisma";
 import { validate } from "./contactSessions";
 
@@ -28,6 +28,8 @@ export async function createMessage(
     if (!conversation) {
       throw { code: "NOT_FOUND", message: "Conversation not found" };
     }
+
+    const { agent } = await getAgentById(conversation.agentId);
 
     // Fetch all existing messages for the conversation
     const existingMessages = await prisma.message.findMany({
@@ -91,6 +93,14 @@ export async function createMessage(
         body: JSON.stringify({
           message: fullPrompt,
           agentId: conversation.agentId,
+          CalEnabled: agent?.CalEnabled,
+          StripeEnabled: agent?.StripeEnabled,
+          SlackEnabled: agent?.SlackEnabled,
+          CalUrl: agent?.CalUrl,
+          STRIPE_API_KEY: agent?.STRIPE_API_KEY,
+          SLACK_BOT_TOKEN: agent?.SLACK_BOT_TOKEN,
+          SLACK_TEAM_ID: agent?.SLACK_TEAM_ID,
+          SLACK_CHANNEL_IDS: agent?.SLACK_CHANNEL_IDS,
         }),
       });
 

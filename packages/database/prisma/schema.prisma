@@ -33,10 +33,10 @@ model Agent {
   StripeEnabled     Boolean?
   SlackEnabled      Boolean?
   CalUrl            String?
-  STRIPE_API_KEY    String?
-  SLACK_BOT_TOKEN   String?
-  SLACK_TEAM_ID     String?
-  SLACK_CHANNEL_IDS String?
+  STRIPE_API_KEY    String?          @db.Text
+  SLACK_BOT_TOKEN   String?          @db.Text
+  SLACK_TEAM_ID     String?          @db.Text
+  SLACK_CHANNEL_IDS String?          @db.Text
   contactSessions   ContactSession[]
 }
 
