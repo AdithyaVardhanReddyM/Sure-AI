@@ -9,10 +9,11 @@ import {
   errorMessageAtom,
   loadingMessageAtom,
   screenAtom,
+  widgetSettingsAtom,
 } from "../../atoms/widget-atoms";
 import { useEffect, useState } from "react";
-import { validateAgent } from "../../../../../../packages/database/src/agents";
-import { validate } from "../../../../../../packages/database/src/contactSessions";
+import { validateAgent, widgetGetSettings } from "@workspace/database";
+import { validate } from "@workspace/database";
 
 type InitStep = "agent" | "session" | "settings" | "done";
 
@@ -25,6 +26,7 @@ export const WidgetLoadingScreen = ({
   const [sessionValid, setSessionValid] = useState(false);
 
   const loadingMessage = useAtomValue(loadingMessageAtom);
+  const setWidgetSettings = useSetAtom(widgetSettingsAtom);
   const setErrorMessage = useSetAtom(errorMessageAtom);
   const setLoadingMessage = useSetAtom(loadingMessageAtom);
   const setScreen = useSetAtom(screenAtom);
@@ -77,7 +79,7 @@ export const WidgetLoadingScreen = ({
     setLoadingMessage("Finding contact session");
     if (!contactSessionId) {
       setSessionValid(false);
-      setStep("done");
+      setStep("settings");
       return;
     }
 
@@ -86,13 +88,28 @@ export const WidgetLoadingScreen = ({
     validate(contactSessionId as string)
       .then((result) => {
         setSessionValid(result.valid);
-        setStep("done");
+        setStep("settings");
       })
       .catch(() => {
         setSessionValid(false);
-        setStep("done");
+        setStep("settings");
       });
   }, [step, contactSessionId, validate, setLoadingMessage]);
+
+  useEffect(() => {
+    if (step !== "settings") {
+      return;
+    }
+    setLoadingMessage("Loading widget settings...");
+    if (agentId) {
+      widgetGetSettings(agentId).then((result) => {
+        if (result !== undefined) {
+          setWidgetSettings(result);
+          setStep("done");
+        }
+      });
+    }
+  }, [step, widgetGetSettings, setWidgetSettings, setLoadingMessage, setStep]);
 
   useEffect(() => {
     if (step !== "done") {

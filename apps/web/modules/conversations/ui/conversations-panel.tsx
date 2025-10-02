@@ -158,18 +158,18 @@ export const ConversationsPanel = () => {
                 <span>All</span>
               </div>
             </SelectItem>
-            <SelectItem value="notEscalated">
+            {/* <SelectItem value="notEscalated">
               <div className="flex items-center gap-2">
                 <BotMessageSquare className="size-4" />
                 <span>Not Escalated</span>
               </div>
-            </SelectItem>
-            <SelectItem value="escalated">
+            </SelectItem> */}
+            {/* <SelectItem value="escalated">
               <div className="flex items-center gap-2">
                 <BotOff className="size-4" />
                 <span>Escalated</span>
               </div>
-            </SelectItem>
+            </SelectItem> */}
           </SelectContent>
         </Select>
       </div>

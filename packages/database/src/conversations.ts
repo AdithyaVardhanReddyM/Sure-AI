@@ -1,8 +1,30 @@
 "use server";
 
-import { prisma } from "@workspace/database";
+import { prisma, widgetGetSettings } from "@workspace/database";
 import { validate } from "./contactSessions";
 import { getLastMessage } from "./messages";
+
+export interface sessionType {
+  name: string;
+  id: string;
+  email: string;
+  agentId: string;
+  expiresAt: bigint;
+  metadata?: {
+    userAgent?: string;
+    language?: string;
+    languages?: string;
+    platform?: string;
+    vendor?: string;
+    screenResolution?: string;
+    viewportSize?: string;
+    timezone?: string;
+    timezoneOffset?: number;
+    cookieEnabled?: boolean;
+    referrer?: string;
+    currentUrl?: string;
+  };
+}
 
 export async function createConversation(
   agentId: string,
@@ -34,12 +56,15 @@ export async function createConversation(
     },
   });
 
+  const widgetSettings = await widgetGetSettings(agentId);
+  const startMessage = widgetSettings?.conversationStartMessage;
+
   await prisma.message.create({
     data: {
       conversationId: conversation.id,
       contactSessionId,
       role: "assistant",
-      content: "Hi there! How can I assist you today?",
+      content: `${startMessage || "Hi there! How can I assist you today?"}`,
     },
   });
 
@@ -229,6 +254,39 @@ export async function getOneDashboard(conversationId: string) {
     ...conversation,
     contactSession,
   };
+}
+
+export async function getOneContactPanel(conversationId: string) {
+  const conversation = await prisma.conversation.findUnique({
+    where: {
+      id: conversationId,
+    },
+  });
+
+  if (!conversation) {
+    throw { code: "NOT_FOUND", message: "Conversation not found" };
+  }
+
+  const contactSession = await prisma.contactSession.findUnique({
+    where: {
+      id: conversation.contactSessionId,
+    },
+  });
+
+  if (!contactSession) {
+    throw { code: "NOT_FOUND", message: "Contact session not found" };
+  }
+
+  const metadata_json = JSON.parse(contactSession.metadata as string);
+
+  return {
+    name: contactSession.name,
+    id: contactSession.id,
+    email: contactSession.email,
+    agentId: contactSession.agentId,
+    expiresAt: contactSession.expiresAt,
+    metadata: metadata_json,
+  } as sessionType;
 }
 
 export async function updateStatus(

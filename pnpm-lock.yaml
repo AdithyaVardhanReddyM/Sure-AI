@@ -44,6 +44,9 @@ importers:
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      bowser:
+        specifier: ^2.12.1
+        version: 2.12.1
       countries-and-timezones:
         specifier: ^3.8.0
         version: 3.8.0

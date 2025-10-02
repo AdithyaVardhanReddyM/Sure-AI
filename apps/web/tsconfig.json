@@ -18,6 +18,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
+    "../../packages/database/src/settings.ts"
   ],
   "exclude": ["node_modules"]
 }

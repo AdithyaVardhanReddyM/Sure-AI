@@ -89,3 +89,13 @@ model Files {
   userId    String
   processed Boolean @default(false)
 }
+
+model WidgetSettings {
+  id                       String  @id @default(uuid())
+  agentId                  String
+  conversationStartMessage String?
+  suggestion               Json?
+  links                    Json?
+
+  @@index([agentId])
+}

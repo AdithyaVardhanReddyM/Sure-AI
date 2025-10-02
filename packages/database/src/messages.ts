@@ -54,25 +54,38 @@ export async function createMessage(
     try {
       const webAppUrl =
         process.env.NEXT_PUBLIC_WEB_APP_URL || "http://localhost:3000";
+      const widgetAppUrl =
+        process.env.NEXT_PUBLIC_WIDGET_APP_URL || "http://localhost:3001";
 
-      // Send event for user message
+      const payload = {
+        type: "new_message",
+        messageId: userMessage.id,
+        conversationId,
+        contactSessionId,
+        role: userMessage.role,
+        content: userMessage.content,
+        createdAt: userMessage.createdAt.toISOString(),
+      };
+
+      // Broadcast to Web App (dashboard)
       await fetch(`${webAppUrl}/api/events/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          type: "new_message",
-          messageId: userMessage.id,
-          conversationId,
-          contactSessionId,
-          role: userMessage.role,
-          content: userMessage.content,
-          createdAt: userMessage.createdAt.toISOString(),
-        }),
+        body: JSON.stringify(payload),
+      });
+
+      // Broadcast to Widget App
+      await fetch(`${widgetAppUrl}/api/events/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
     } catch (error) {
-      console.error("Error notifying web app about messages:", error);
+      console.error("Error notifying apps about user message:", error);
     }
 
     if (conversation.status === "notEscalated") {
@@ -121,25 +134,38 @@ export async function createMessage(
       try {
         const webAppUrl =
           process.env.NEXT_PUBLIC_WEB_APP_URL || "http://localhost:3000";
+        const widgetAppUrl =
+          process.env.NEXT_PUBLIC_WIDGET_APP_URL || "http://localhost:3001";
 
-        // Send event for assistant message
+        const payload = {
+          type: "new_message",
+          messageId: assistantMessage.id,
+          conversationId,
+          contactSessionId,
+          role: assistantMessage.role,
+          content: assistantMessage.content,
+          createdAt: assistantMessage.createdAt.toISOString(),
+        };
+
+        // Broadcast to Web App (dashboard)
         await fetch(`${webAppUrl}/api/events/messages`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            type: "new_message",
-            messageId: assistantMessage.id,
-            conversationId,
-            contactSessionId,
-            role: assistantMessage.role,
-            content: assistantMessage.content,
-            createdAt: assistantMessage.createdAt.toISOString(),
-          }),
+          body: JSON.stringify(payload),
+        });
+
+        // Broadcast to Widget App
+        await fetch(`${widgetAppUrl}/api/events/messages`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
         });
       } catch (error) {
-        console.error("Error notifying web app about messages:", error);
+        console.error("Error notifying apps about assistant message:", error);
       }
     }
   } catch (error) {
