@@ -55,6 +55,44 @@ export const ConversationsPanel = () => {
       });
   }, [agentId]);
 
+  // SSE connection for real-time updates
+  useEffect(() => {
+    if (!agentId) return;
+
+    const eventSource = new EventSource(
+      `/api/events/conversations?agentId=${agentId}`
+    );
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "new_conversation") {
+          // Refetch all conversations to get the updated list with the new conversation
+          getConversationsDashboard(agentId)
+            .then((updatedData) => {
+              if (updatedData) {
+                setConversations(updatedData);
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching updated conversations:", error);
+            });
+        }
+      } catch (error) {
+        console.error("Error parsing SSE event:", error);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE connection error:", error);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [agentId]);
+
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 

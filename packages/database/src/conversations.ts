@@ -43,6 +43,28 @@ export async function createConversation(
     },
   });
 
+  // Notify the web app about the new conversation for real-time updates
+  try {
+    const webAppUrl =
+      process.env.NEXT_PUBLIC_WEB_APP_URL || "http://localhost:3000";
+
+    await fetch(`${webAppUrl}/api/events/conversations`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        conversationId: conversation.id,
+        agentId,
+        contactSessionId,
+        status: conversation.status,
+        createdAt: conversation.createdAt.toISOString(),
+      }),
+    });
+  } catch (error) {
+    console.error("Error notifying web app:", error);
+  }
+
   return conversation.id;
 }
 
@@ -153,10 +175,6 @@ export async function getConversationsDashboard(agentId: string) {
         const validation = await validate(conversation.contactSessionId);
 
         if (!validation.valid || !validation.contactSession) {
-          console.log(
-            "Session invalid, skipping conversation:",
-            conversation.id
-          );
           return null;
         }
 
