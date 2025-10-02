@@ -1,3 +1,5 @@
+"use client";
+
 import { WidgetHeader } from "../components/widget-header";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
