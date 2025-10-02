@@ -198,7 +198,7 @@ export default function SourcesClient({ agentId }: SourcesClientProps) {
         <CardHeader className="px-6 pt-6">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+              <CardTitle className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-black">
                 Agent Sources
               </CardTitle>
               <p className="text-muted-foreground text-sm">

@@ -64,3 +64,92 @@ export async function validateAgent(agentId: string) {
     return { valid: false, reason: "Error validating agent" };
   }
 }
+
+export async function updateAgentCalSettings(
+  agentId: string,
+  calUrl: string,
+  calEnabled: boolean
+) {
+  try {
+    const agent = await prisma.agent.update({
+      where: {
+        id: agentId,
+      },
+      data: {
+        CalUrl: calUrl,
+        CalEnabled: calEnabled,
+      },
+    });
+    return { success: true, agent };
+  } catch (error) {
+    console.error("Error updating Cal.com settings:", error);
+    return { success: false, error: "Failed to update Cal.com settings" };
+  }
+}
+
+export async function updateAgentSlackSettings(
+  agentId: string,
+  slackBotToken: string,
+  slackTeamId: string,
+  slackChannelIds: string,
+  slackEnabled: boolean
+) {
+  try {
+    const agent = await prisma.agent.update({
+      where: {
+        id: agentId,
+      },
+      data: {
+        SLACK_BOT_TOKEN: slackBotToken,
+        SLACK_TEAM_ID: slackTeamId,
+        SLACK_CHANNEL_IDS: slackChannelIds,
+        SlackEnabled: slackEnabled,
+      },
+    });
+    return { success: true, agent };
+  } catch (error) {
+    console.error("Error updating Slack settings:", error);
+    return { success: false, error: "Failed to update Slack settings" };
+  }
+}
+
+export async function updateAgentStripeSettings(
+  agentId: string,
+  stripeApiKey: string,
+  stripeEnabled: boolean
+) {
+  try {
+    const agent = await prisma.agent.update({
+      where: {
+        id: agentId,
+      },
+      data: {
+        STRIPE_API_KEY: stripeApiKey,
+        StripeEnabled: stripeEnabled,
+      },
+    });
+    return { success: true, agent };
+  } catch (error) {
+    console.error("Error updating Stripe settings:", error);
+    return { success: false, error: "Failed to update Stripe settings" };
+  }
+}
+
+export async function getAgentById(agentId: string) {
+  try {
+    const agent = await prisma.agent.findUnique({
+      where: {
+        id: agentId,
+      },
+    });
+
+    if (!agent) {
+      return { success: false, error: "Agent not found" };
+    }
+
+    return { success: true, agent };
+  } catch (error) {
+    console.error("Error fetching agent:", error);
+    return { success: false, error: "Failed to fetch agent" };
+  }
+}

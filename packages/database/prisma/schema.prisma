@@ -26,10 +26,18 @@ enum Role {
 }
 
 model Agent {
-  id              String           @id @default(uuid())
-  name            String
-  clerkId         String
-  contactSessions ContactSession[]
+  id                String           @id @default(uuid())
+  name              String
+  clerkId           String
+  CalEnabled        Boolean?
+  StripeEnabled     Boolean?
+  SlackEnabled      Boolean?
+  CalUrl            String?
+  STRIPE_API_KEY    String?
+  SLACK_BOT_TOKEN   String?
+  SLACK_TEAM_ID     String?
+  SLACK_CHANNEL_IDS String?
+  contactSessions   ContactSession[]
 }
 
 model ContactSession {

@@ -1,6 +1,14 @@
 export { prisma } from "./client"; // exports instance of prisma
 export * from "../generated/prisma"; // exports generated types from prisma
-export { createAgent, getUserAgents, deleteAgent } from "./agents"; // exports agent related functions
+export {
+  createAgent,
+  getUserAgents,
+  deleteAgent,
+  updateAgentCalSettings,
+  updateAgentSlackSettings,
+  updateAgentStripeSettings,
+  getAgentById,
+} from "./agents"; // exports agent related functions
 export { createContactSession } from "./contactSessions"; // exports contact session related functions
 export type { ContactSessionMetadataInput } from "./contactSessions";
 export {
