@@ -13,7 +13,7 @@ import {
 import { Input } from "@workspace/ui/components/input";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
-import { createAgent } from "@/actions/agentActions";
+import { createAgent } from "@workspace/database";
 
 interface Agent {
   id: string;

@@ -20,7 +20,21 @@ model User {
 }
 
 model Agent {
-  id      String @id @default(uuid())
-  name    String
-  clerkId String
+  id              String           @id @default(uuid())
+  name            String
+  clerkId         String
+  contactSessions ContactSession[]
+}
+
+model ContactSession {
+  id        String @id @default(uuid())
+  name      String
+  email     String
+  agentId   String
+  agent     Agent  @relation(fields: [agentId], references: [id])
+  expiresAt BigInt
+  metadata  Json?
+
+  @@index([expiresAt])
+  @@index([agentId])
 }

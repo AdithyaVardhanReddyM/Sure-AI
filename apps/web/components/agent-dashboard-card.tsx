@@ -19,7 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
-import { deleteAgent } from "@/actions/agentActions";
+import { deleteAgent } from "@workspace/database";
 import { useState } from "react";
 
 interface Agent {
