@@ -13,6 +13,7 @@ import {
 } from "../../atoms/widget-atoms";
 import { createConversation } from "@workspace/database";
 import { useState } from "react";
+import WidgetFooter from "../components/widget-footer";
 
 export const WidgetSelectionScreen = () => {
   const setScreen = useSetAtom(screenAtom);
@@ -57,7 +58,7 @@ export const WidgetSelectionScreen = () => {
           <p className="text-lg">How can we help you today?</p>
         </div>
       </WidgetHeader>
-      <div className="flex flex-1 flex-col items-center justify-center gap-y-4 p-4  overflow-y-auto">
+      <div className="flex flex-1 flex-col items-center justify-start gap-y-4 p-4  overflow-y-auto">
         <Button
           className="h-16 w-full justify-between bg-white/10 text-primary-foreground"
           onClick={handleNewConversation}
@@ -74,6 +75,7 @@ export const WidgetSelectionScreen = () => {
           </div>
         </Button>
       </div>
+      <WidgetFooter />
     </>
   );
 };

@@ -131,3 +131,25 @@ export async function getMany(
     throw error;
   }
 }
+
+export async function getLastMessage(
+  conversationId: string,
+  contactSessionId: string
+) {
+  try {
+    // Fetch the last message
+    const lastMessage = await prisma.message.findFirst({
+      where: {
+        conversationId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return lastMessage;
+  } catch (error) {
+    console.error("Error fetching last message:", error);
+    throw error;
+  }
+}

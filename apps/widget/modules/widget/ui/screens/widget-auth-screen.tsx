@@ -23,6 +23,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import {
   agentIdAtom,
   contactSessionIdAtomFamily,
+  screenAtom,
 } from "../../atoms/widget-atoms";
 
 const formSchema = z.object({
@@ -33,6 +34,8 @@ const formSchema = z.object({
 // const agentId = "abcd-1234-efgh-5678"; // Example agentId, replace later
 
 export const WidgetAuthScreen = () => {
+  const setScreen = useSetAtom(screenAtom);
+
   const agentId = useAtomValue(agentIdAtom);
   const setContactSessionId = useSetAtom(
     contactSessionIdAtomFamily(agentId || "")
@@ -72,6 +75,7 @@ export const WidgetAuthScreen = () => {
     );
     if (session.contactSession?.id) {
       setContactSessionId(session.contactSession?.id);
+      setScreen("selection");
     }
   };
 
@@ -83,7 +87,7 @@ export const WidgetAuthScreen = () => {
           <p className="text-lg">How can we help you today?</p>
         </div>
       </WidgetHeader>
-      <div className="bg-primary/60 rounded-lg m-2">
+      <div className="bg-white/15 rounded-lg m-2">
         <Form {...form}>
           <form
             className="flex flex-1 flex-col gap-y-4 p-4"
@@ -97,7 +101,7 @@ export const WidgetAuthScreen = () => {
                   <FormLabel className="text-background">Name</FormLabel>
                   <FormControl>
                     <Input
-                      className="h-10 bg-background "
+                      className="h-10 bg-white/20 border-none placeholder:text-white/50"
                       placeholder="e.g. Jack Smith"
                       type="text"
                       {...field}
@@ -115,7 +119,7 @@ export const WidgetAuthScreen = () => {
                   <FormLabel className="text-background">Email</FormLabel>
                   <FormControl>
                     <Input
-                      className="h-10 bg-background"
+                      className="h-10 bg-white/20 border-none placeholder:text-white/50"
                       placeholder="e.g. jack.smith@domain.com"
                       type="text"
                       {...field}
@@ -129,6 +133,7 @@ export const WidgetAuthScreen = () => {
               disabled={form.formState.isSubmitting}
               size="lg"
               type="submit"
+              className="bg-white text-primary"
             >
               <span>Continue</span>
               <ArrowRightCircle className="h-5 w-5" />

@@ -2,6 +2,7 @@
 
 import { prisma } from "@workspace/database";
 import { validate } from "./contactSessions";
+import { getLastMessage } from "./messages";
 
 export async function createConversation(
   agentId: string,
@@ -93,6 +94,42 @@ export async function getConversationById(conversationId: string) {
     return conversation;
   } catch (error) {
     console.error("Error fetching conversation:", error);
+    return null;
+  }
+}
+
+export async function getManyConversations(contactSessionId: string) {
+  try {
+    const validation = await validate(contactSessionId);
+
+    if (!validation.valid || !validation.contactSession) {
+      throw { code: "UNAUTHORIZED", message: "Invalid session" };
+    }
+
+    const conversations = await prisma.conversation.findMany({
+      where: {
+        contactSessionId,
+      },
+    });
+
+    const conversationsWithLastMessage = await Promise.all(
+      conversations.map(async (conversation) => {
+        const lastMessage = await getLastMessage(
+          conversation.id,
+          contactSessionId
+        );
+        return {
+          conversationId: conversation.id,
+          agentId: conversation.agentId,
+          lastMessage: lastMessage ? lastMessage.content : null,
+          createdAt: conversation.createdAt,
+        };
+      })
+    );
+
+    return conversationsWithLastMessage;
+  } catch (error) {
+    console.error("Error fetching conversations:", error);
     return null;
   }
 }

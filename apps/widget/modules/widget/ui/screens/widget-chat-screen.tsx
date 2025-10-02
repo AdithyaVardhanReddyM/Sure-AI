@@ -35,6 +35,7 @@ import {
 } from "@workspace/ui/components/ai/input";
 import {
   AIMessage,
+  AIMessageAvatar,
   AIMessageContent,
 } from "@workspace/ui/components/ai/message";
 import { AIResponse } from "@workspace/ui/components/ai/response";
@@ -44,6 +45,8 @@ import {
 } from "@workspace/ui/components/ai/suggestion";
 import { Message } from "@workspace/database";
 import { Form, FormField } from "@workspace/ui/components/form";
+import { DicebearAvatar } from "@workspace/ui/components/dicebear-avatar";
+import Image from "next/image";
 
 const formSchema = z.object({
   message: z.string().min(1, "Message is Required"),
@@ -112,22 +115,25 @@ export const WidgetChatScreen = () => {
 
   return (
     <>
-      <WidgetHeader className="flex items-center justify-between">
-        <div className="flex items-center gap-x-2">
-          <Button
-            size="icon"
-            className="bg-white/10 hover:bg-white/20"
-            onClick={onBack}
-          >
-            <ArrowLeftIcon />
+      <div className="bg-gradient-to-b from-secondary-foreground to-primary">
+        <WidgetHeader className="flex items-center justify-between">
+          <div className="flex items-center gap-x-2">
+            <Button
+              size="icon"
+              className="bg-white/10 hover:bg-white/20"
+              onClick={onBack}
+            >
+              <ArrowLeftIcon />
+            </Button>
+            <p>Chat</p>
+          </div>
+          <Button size="icon" className="bg-white/10 hover:bg-white/20">
+            <MenuIcon />
           </Button>
-          <p>Chat</p>
-        </div>
-        <Button size="icon" className="bg-white/10 hover:bg-white/20">
-          <MenuIcon />
-        </Button>
-      </WidgetHeader>
-      <AIConversation>
+        </WidgetHeader>
+      </div>
+
+      <AIConversation className="bg-white">
         <AIConversationContent>
           {(messages ?? [])?.map((message) => {
             return (
@@ -138,48 +144,63 @@ export const WidgetChatScreen = () => {
                 <AIMessageContent>
                   <AIResponse>{message.content}</AIResponse>
                 </AIMessageContent>
+                {message.role === "assistant" && (
+                  <Image
+                    src={"/logo.svg"}
+                    className="h-6 w-6 translate-y-[-6px]"
+                    alt="logo"
+                    width={4}
+                    height={4}
+                  />
+                )}
+                {/* <AIMessageAvatar src="/logo.svg" /> */}
               </AIMessage>
             );
           })}
         </AIConversationContent>
       </AIConversation>
-      <Form {...form}>
-        <AIInput onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            disabled={conversation?.status === "resolved"}
-            name="message"
-            render={({ field }) => (
-              <AIInputTextarea
-                disabled={conversation?.status === "resolved"}
-                value={field.value}
-                onChange={field.onChange}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    form.handleSubmit(onSubmit)();
+      <div className="bg-white p-2">
+        <Form {...form}>
+          <AIInput
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="border-2 border-primary/30"
+          >
+            <FormField
+              control={form.control}
+              disabled={conversation?.status === "resolved"}
+              name="message"
+              render={({ field }) => (
+                <AIInputTextarea
+                  disabled={conversation?.status === "resolved"}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      form.handleSubmit(onSubmit)();
+                    }
+                  }}
+                  placeholder={
+                    conversation?.status === "resolved"
+                      ? "This conversation has been resolved."
+                      : "Type your message..."
                   }
-                }}
-                placeholder={
-                  conversation?.status === "resolved"
-                    ? "This conversation has been resolved."
-                    : "Type your message..."
-                }
-              />
-            )}
-          />
-          <AIInputToolbar>
-            <AIInputTools />
-            <AIInputSubmit
-              disabled={
-                conversation?.status === "resolved" || !form.formState.isValid
-              }
-              status="ready"
-              type="submit"
+                />
+              )}
             />
-          </AIInputToolbar>
-        </AIInput>
-      </Form>
+            <AIInputToolbar>
+              <AIInputTools />
+              <AIInputSubmit
+                disabled={
+                  conversation?.status === "resolved" || !form.formState.isValid
+                }
+                status="ready"
+                type="submit"
+              />
+            </AIInputToolbar>
+          </AIInput>
+        </Form>
+      </div>
     </>
   );
 };
