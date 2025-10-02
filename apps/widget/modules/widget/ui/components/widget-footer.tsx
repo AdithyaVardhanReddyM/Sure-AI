@@ -23,7 +23,7 @@ const WidgetFooter = () => {
               <Button
                 className={cn(
                   "group relative flex-1 rounded-none rounded-l-2xl bg-transparent",
-                  "hover:bg-purple-500/20 transition-colors",
+                  "hover:bg-transparent transition-colors",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300"
                 )}
                 onClick={() => setScreen("selection")}
@@ -63,7 +63,7 @@ const WidgetFooter = () => {
               <Button
                 className={cn(
                   "group relative flex-1 rounded-none rounded-r-2xl bg-transparent",
-                  "hover:bg-purple-500/20 transition-colors",
+                  "hover:bg-transparent transition-colors",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300"
                 )}
                 onClick={() => setScreen("inbox")}
