@@ -1,3 +1,4 @@
+"use server";
 import { prisma } from "@workspace/database";
 
 export async function uploadFile(
@@ -31,6 +32,17 @@ export async function getFilesByUserId(userId: string) {
     },
     orderBy: {
       fileName: "asc",
+    },
+  });
+}
+
+export async function updateFileAgent(fileId: string, agentId: string | null) {
+  return await prisma.files.update({
+    where: {
+      id: fileId,
+    },
+    data: {
+      agentId,
     },
   });
 }

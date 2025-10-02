@@ -74,9 +74,10 @@ model Message {
 }
 
 model Files {
-  id       String  @id @default(uuid())
-  agentId  String?
-  fileUrl  String
-  fileName String
-  userId   String
+  id        String  @id @default(uuid())
+  agentId   String?
+  fileUrl   String
+  fileName  String
+  userId    String
+  prossesed Boolean @default(false)
 }
