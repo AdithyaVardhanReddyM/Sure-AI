@@ -72,3 +72,11 @@ model Message {
   @@index([conversationId])
   @@index([contactSessionId])
 }
+
+model Files {
+  id       String  @id @default(uuid())
+  agentId  String?
+  fileUrl  String
+  fileName String
+  userId   String
+}

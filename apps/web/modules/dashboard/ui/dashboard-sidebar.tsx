@@ -1,5 +1,5 @@
 "use client";
-import { Bot, ChevronDown, Settings } from "lucide-react";
+import { Bot, ChevronDown, Database, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -63,6 +63,23 @@ export const DashboardSidebar = () => {
                     <Link href="/dashboard">
                       <Bot className="size-4" />
                       <span>Agents</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+              <SidebarMenu>
+                <SidebarMenuItem className="mb-3">
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/dashboard/upload-sources")}
+                    className={cn(
+                      isActive("/dashboard/upload-sources") &&
+                        "bg-gradient-to-b from-sidebar-primary to-[#7754ad] text-sidebar-primary-foreground!"
+                    )}
+                  >
+                    <Link href="/dashboard/upload-sources">
+                      <Database className="size-4" />
+                      <span>Knowledge</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

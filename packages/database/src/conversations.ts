@@ -230,3 +230,22 @@ export async function getOneDashboard(conversationId: string) {
     contactSession,
   };
 }
+
+export async function updateStatus(
+  conversationId: string,
+  status: "notEscalated" | "escalated"
+) {
+  try {
+    const conversation = await prisma.conversation.update({
+      where: {
+        id: conversationId,
+      },
+      data: {
+        status,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating conversation status:", error);
+    throw error;
+  }
+}

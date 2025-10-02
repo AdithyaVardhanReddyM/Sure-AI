@@ -16,3 +16,4 @@ export {
   getManyDashboard,
   createMessageDashboard,
 } from "./messages"; // exports message related functions
+export { uploadFile, deleteFile, getFilesByUserId } from "./files";

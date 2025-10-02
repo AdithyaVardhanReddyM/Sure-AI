@@ -39,14 +39,6 @@ export async function createMessage(
       },
     });
 
-    // Build the prompt template with history
-    let fullPrompt = "";
-    fullPrompt += `user: ${prompt}\n`;
-    fullPrompt += "Conversation History : ";
-    for (const msg of existingMessages) {
-      fullPrompt += `${msg.role}: ${msg.content}\n`;
-    }
-
     // Create the user message
     const userMessage = await prisma.message.create({
       data: {
@@ -57,32 +49,6 @@ export async function createMessage(
       },
     });
 
-    // Make POST call to AI service with full history
-    const aiResponse = await fetch("http://127.0.0.1:8000/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: fullPrompt,
-      }),
-    });
-
-    const aiData = await aiResponse.json();
-    const aiContent =
-      aiData.response || "I'm sorry, I couldn't generate a response.";
-
-    // Create the assistant message
-    const assistantMessage = await prisma.message.create({
-      data: {
-        conversationId,
-        contactSessionId,
-        role: "assistant",
-        content: aiContent,
-      },
-    });
-
-    // Notify the web app about both new messages for real-time updates
     try {
       const webAppUrl =
         process.env.NEXT_PUBLIC_WEB_APP_URL || "http://localhost:3000";
@@ -103,31 +69,68 @@ export async function createMessage(
           createdAt: userMessage.createdAt.toISOString(),
         }),
       });
+    } catch (error) {
+      console.error("Error notifying web app about messages:", error);
+    }
 
-      // Send event for assistant message
-      await fetch(`${webAppUrl}/api/events/messages`, {
+    if (conversation.status === "notEscalated") {
+      // Build the prompt template with history
+      let fullPrompt = "";
+      fullPrompt += `user: ${prompt}\n`;
+      fullPrompt += "Conversation History : ";
+      for (const msg of existingMessages) {
+        fullPrompt += `${msg.role}: ${msg.content}\n`;
+      }
+
+      // Make POST call to AI service with full history
+      const aiResponse = await fetch("http://127.0.0.1:8000/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          type: "new_message",
-          messageId: assistantMessage.id,
-          conversationId,
-          contactSessionId,
-          role: assistantMessage.role,
-          content: assistantMessage.content,
-          createdAt: assistantMessage.createdAt.toISOString(),
+          message: fullPrompt,
         }),
       });
-    } catch (error) {
-      console.error("Error notifying web app about messages:", error);
-    }
 
-    return {
-      userMessage,
-      assistantMessage,
-    };
+      const aiData = await aiResponse.json();
+      const aiContent =
+        aiData.response || "I'm sorry, I couldn't generate a response.";
+
+      // Create the assistant message
+      const assistantMessage = await prisma.message.create({
+        data: {
+          conversationId,
+          contactSessionId,
+          role: "assistant",
+          content: aiContent,
+        },
+      });
+
+      try {
+        const webAppUrl =
+          process.env.NEXT_PUBLIC_WEB_APP_URL || "http://localhost:3000";
+
+        // Send event for assistant message
+        await fetch(`${webAppUrl}/api/events/messages`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "new_message",
+            messageId: assistantMessage.id,
+            conversationId,
+            contactSessionId,
+            role: assistantMessage.role,
+            content: assistantMessage.content,
+            createdAt: assistantMessage.createdAt.toISOString(),
+          }),
+        });
+      } catch (error) {
+        console.error("Error notifying web app about messages:", error);
+      }
+    }
   } catch (error) {
     console.error("Error creating message:", error);
     throw error;
