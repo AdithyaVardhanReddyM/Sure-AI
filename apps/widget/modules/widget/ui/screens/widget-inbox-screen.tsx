@@ -14,6 +14,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getManyConversations } from "../../../../../../packages/database/src/conversations";
 import { formatDistanceToNow } from "date-fns";
+import { ConversationStatusIcon } from "@workspace/ui/components/conversation-status-icon";
 
 export const WidgetInboxScreen = () => {
   const setScreen = useSetAtom(screenAtom);
@@ -30,6 +31,7 @@ export const WidgetInboxScreen = () => {
         agentId: string;
         lastMessage: string | null;
         createdAt: Date;
+        status: "escalated" | "notEscalated";
       }[]
     | null
   >(null);
@@ -80,6 +82,7 @@ export const WidgetInboxScreen = () => {
                 </div>
                 <div className="flex w-full items-center justify-between gap-x-2">
                   <p className="truncate text-sm">{conversation.lastMessage}</p>
+                  <ConversationStatusIcon status={conversation.status} />
                 </div>
               </div>
             </Button>

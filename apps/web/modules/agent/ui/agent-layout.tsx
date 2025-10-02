@@ -17,8 +17,8 @@ export const AgentLayout = async ({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AgentSidebar />
       <main className="flex flex-1 flex-col min-h-screen py-2 pr-2 overflow-auto">
-        <div className="bg-white rounded-md h-full border-2 border-primary/25">
-          <SidebarTrigger />
+        <div className="bg-white relative rounded-md h-full border-2 border-primary/25">
+          <SidebarTrigger className="absolute top-3 left-2" />
           {children}
         </div>
       </main>

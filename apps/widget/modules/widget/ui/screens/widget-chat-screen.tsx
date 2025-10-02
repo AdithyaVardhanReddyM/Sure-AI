@@ -167,33 +167,37 @@ export const WidgetChatScreen = () => {
           >
             <FormField
               control={form.control}
-              disabled={conversation?.status === "resolved"}
+              // disabled={conversation?.status === "resolved"}
               name="message"
               render={({ field }) => (
                 <AIInputTextarea
-                  disabled={conversation?.status === "resolved"}
+                  // disabled={conversation?.status === "resolved"}
                   value={field.value}
-                  onChange={field.onChange}
+                  onChange={(e) => {
+                    let newValue = e.target.value;
+                    if (
+                      field.value === "" &&
+                      newValue.length === 1 &&
+                      /[a-z]/.test(newValue)
+                    ) {
+                      newValue = newValue.toUpperCase();
+                    }
+                    field.onChange(newValue);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
                       form.handleSubmit(onSubmit)();
                     }
                   }}
-                  placeholder={
-                    conversation?.status === "resolved"
-                      ? "This conversation has been resolved."
-                      : "Type your message..."
-                  }
+                  placeholder="Type your message here..."
                 />
               )}
             />
             <AIInputToolbar>
               <AIInputTools />
               <AIInputSubmit
-                disabled={
-                  conversation?.status === "resolved" || !form.formState.isValid
-                }
+                disabled={!form.formState.isValid}
                 status="ready"
                 type="submit"
               />

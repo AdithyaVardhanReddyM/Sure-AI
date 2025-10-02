@@ -29,7 +29,7 @@ export async function createConversation(
     data: {
       agentId,
       contactSessionId,
-      status: "unresolved",
+      status: "notEscalated",
       // threadId,
     },
   });
@@ -123,6 +123,7 @@ export async function getManyConversations(contactSessionId: string) {
           agentId: conversation.agentId,
           lastMessage: lastMessage ? lastMessage.content : null,
           createdAt: conversation.createdAt,
+          status: conversation.status,
         };
       })
     );
@@ -130,6 +131,54 @@ export async function getManyConversations(contactSessionId: string) {
     return conversationsWithLastMessage;
   } catch (error) {
     console.error("Error fetching conversations:", error);
+    return null;
+  }
+}
+
+export async function getConversationsDashboard(agentId: string) {
+  try {
+    // Fetch all conversations for the agent, ordered by latest first
+    const conversations = await prisma.conversation.findMany({
+      where: {
+        agentId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    // For each conversation, fetch contactSession data and lastMessage if session is valid
+    const conversationsWithData = await Promise.all(
+      conversations.map(async (conversation) => {
+        const validation = await validate(conversation.contactSessionId);
+
+        if (!validation.valid || !validation.contactSession) {
+          console.log(
+            "Session invalid, skipping conversation:",
+            conversation.id
+          );
+          return null;
+        }
+
+        const contactSession = validation.contactSession;
+        const lastMessage = await getLastMessage(
+          conversation.id,
+          conversation.contactSessionId
+        );
+
+        return {
+          ...conversation,
+          contactSession,
+          lastMessage,
+        };
+      })
+    );
+
+    const filteredConversations = conversationsWithData.filter(
+      (conv) => conv !== null
+    );
+    return filteredConversations;
+  } catch (error) {
     return null;
   }
 }

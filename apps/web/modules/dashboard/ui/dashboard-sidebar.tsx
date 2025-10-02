@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@workspace/ui/lib/utils";
+import Image from "next/image";
 
 export const DashboardSidebar = () => {
   const pathname = usePathname();
@@ -36,7 +37,15 @@ export const DashboardSidebar = () => {
   return (
     <Sidebar variant="inset" collapsible="icon">
       <SidebarContent>
-        <SidebarHeader>Logo</SidebarHeader>
+        <SidebarHeader>
+          <Image
+            src="/logo_full.svg"
+            alt="Logo"
+            width={120}
+            height={40}
+            className="mb-4"
+          />
+        </SidebarHeader>
         <Collapsible className="group/collapsible">
           <SidebarGroup>
             <SidebarGroupLabel>Dashboard</SidebarGroupLabel>

@@ -15,8 +15,7 @@ datasource db {
 }
 
 enum ConversationStatus {
-  unresolved
-  resolved
+  notEscalated
   escalated
 }
 

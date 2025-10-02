@@ -22,6 +22,7 @@ import {
   UploadCloud,
   MessageSquareMore,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -55,7 +56,15 @@ const AgentSidebar = () => {
   };
   return (
     <Sidebar className="group" collapsible="icon" variant="inset">
-      <SidebarHeader>Logo</SidebarHeader>
+      <SidebarHeader>
+        <Image
+          src="/logo_full.svg"
+          alt="Logo"
+          width={120}
+          height={40}
+          className="mb-4"
+        />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Support & Knowledge</SidebarGroupLabel>
@@ -134,7 +143,7 @@ const AgentSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenuButton asChild className="border-dashed border-2">
+        <SidebarMenuButton asChild className="text-primary bg-primary/20">
           <Link href={`/dashboard`}>
             <ArrowLeftIcon className="size-4" />
             <span>Dashboard</span>
@@ -146,9 +155,9 @@ const AgentSidebar = () => {
             elements: {
               rootBox: "w-full! h-8!",
               userButtonTrigger:
-                "w-full! p-2! hover: bg-sidebar-accent! hover: text-sidebar-accent-foreground! group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon] :p-2!",
+                "w-full! p-2! hover:bg-sidebar-accent! hover:text-sidebar-accent-foreground! group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2!",
               userButtonBox:
-                "w-full! flex-row-reverse! justify-end! gap-2! group-data-[collapsible=icon]: justify-center! text-sidebar-foreground!",
+                "w-full! flex-row-reverse! justify-end! gap-2! group-data-[collapsible=icon]:justify-center! text-sidebar-foreground!",
               userButtonOuterIdentifier:
                 "pl-0! group-data-[collapsible=icon]:hidden!",
               avatarBox: "size-4!",
