@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@workspace/database";
+import { ContactSession } from "../generated/prisma";
 
 export interface ContactSessionMetadataInput {
   userAgent?: string;
@@ -17,6 +18,33 @@ export interface ContactSessionMetadataInput {
   currentUrl?: string;
 }
 
+// export interface ValidateContactSessionResult {
+//   valid: boolean;
+//   reason?: string;
+//   contactSession?: ContactSession;
+// }
+
+export async function validate(contactSessionId: string) {
+  try {
+    const contactSession = await prisma.contactSession.findUnique({
+      where: { id: contactSessionId },
+    });
+
+    if (!contactSession) {
+      return { valid: false, reason: "contact session not found" };
+    }
+
+    if (contactSession.expiresAt < Date.now()) {
+      return { valid: false, reason: "contact session expired" };
+    }
+
+    return { valid: true, contactSession };
+  } catch (error) {
+    console.error("Error validating contact session:", error);
+    return { valid: false, reason: "error validating contact session" };
+  }
+}
+
 export async function createContactSession(
   name: string,
   email: string,
@@ -24,6 +52,14 @@ export async function createContactSession(
   metadata?: ContactSessionMetadataInput
 ) {
   try {
+    // Validate agent exists
+    // const agent = await prisma.agent.findUnique({
+    //   where: { id: agentId },
+    // });
+    // if (!agent) {
+    //   return { success: false, error: "Agent not found" };
+    // }
+
     // expiresAt is set to 24 hours from now
     const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
 

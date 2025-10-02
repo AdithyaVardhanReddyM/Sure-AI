@@ -47,3 +47,20 @@ export async function deleteAgent(agentId: string) {
     return { success: false, error: "Failed to delete agent" };
   }
 }
+
+export async function validateAgent(agentId: string) {
+  try {
+    const agent = await prisma.agent.findUnique({
+      where: { id: agentId },
+    });
+
+    if (!agent) {
+      return { valid: false, reason: "Agent not valid" };
+    }
+
+    return { valid: true };
+  } catch (error) {
+    console.error("Error validating agent:", error);
+    return { valid: false, reason: "Error validating agent" };
+  }
+}

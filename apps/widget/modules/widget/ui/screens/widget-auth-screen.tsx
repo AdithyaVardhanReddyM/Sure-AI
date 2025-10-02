@@ -19,15 +19,25 @@ import {
   ContactSessionMetadataInput,
   createContactSession,
 } from "@workspace/database";
+import { useAtomValue, useSetAtom } from "jotai";
+import {
+  agentIdAtom,
+  contactSessionIdAtomFamily,
+} from "../../atoms/widget-atoms";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
 });
 
-const agentId = "ef94e8f8-5531-4a8e-b55d-ead985e8a2ca"; // Example agentId, replace later
+// const agentId = "abcd-1234-efgh-5678"; // Example agentId, replace later
 
 export const WidgetAuthScreen = () => {
+  const agentId = useAtomValue(agentIdAtom);
+  const setContactSessionId = useSetAtom(
+    contactSessionIdAtomFamily(agentId || "")
+  );
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,6 +70,9 @@ export const WidgetAuthScreen = () => {
       agentId,
       metaData
     );
+    if (session.contactSession?.id) {
+      setContactSessionId(session.contactSession?.id);
+    }
   };
 
   return (

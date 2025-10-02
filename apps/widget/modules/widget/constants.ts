@@ -8,4 +8,4 @@ export const WIDGET_SCREENS = [
   "chat",
   "contact",
 ] as const;
-export const CONTACT_SESSION_KEY = "saya_contact_session";
+export const CONTACT_SESSION_KEY = "sure_contact_session";
