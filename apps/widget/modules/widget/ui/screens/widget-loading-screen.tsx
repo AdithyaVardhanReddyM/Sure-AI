@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { WidgetHeader } from "../components/widget-header";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
@@ -111,9 +111,36 @@ export const WidgetLoadingScreen = ({
           <p className="text-lg">How can we help you today?</p>
         </div>
       </WidgetHeader>
-      <div className="flex flex-1 flex-col items-center justify-center gap-y-4 p-4 text-primary-foreground">
-        <Loader2 className="animate-spin" />
-        <p className="text-sm">{loadingMessage || "Loading"}</p>
+      <div className="flex flex-1 flex-col items-center justify-center gap-y-6 p-6">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-16 w-16 animate-ping rounded-full bg-primary/20"></div>
+          </div>
+          <div className="relative flex items-center justify-center rounded-full bg-gradient-to-br from-secondary-foreground/50 to-secondary-foreground/85 p-4 backdrop-blur-sm">
+            <Sparkles className="h-8 w-8 text-white animate-pulse" />
+          </div>
+        </div>
+        <div className="w-full max-w-xs">
+          <div className="h-2 rounded-full bg-primary/10">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-primary to-secondary-foreground transition-all duration-700 ease-out"
+              style={{
+                width:
+                  step === "agent"
+                    ? "33%"
+                    : step === "session"
+                      ? "66%"
+                      : "100%",
+              }}
+            ></div>
+          </div>
+        </div>
+        <div className="text-center">
+          <p className="text-sm font-medium text-white/90">
+            {loadingMessage || "Preparing your experience..."}
+          </p>
+          <p className="mt-1 text-xs text-white/70">Just a moment</p>
+        </div>
       </div>
     </>
   );

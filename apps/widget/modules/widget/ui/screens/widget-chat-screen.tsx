@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { WidgetHeader } from "../components/widget-header";
-import { ArrowLeftIcon, MenuIcon, User } from "lucide-react";
+import { ArrowLeftIcon, MenuIcon, SendIcon, User } from "lucide-react";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   agentIdAtom,
@@ -163,106 +163,122 @@ export const WidgetChatScreen = () => {
 
   return (
     <>
-      <div className="bg-gradient-to-b from-secondary-foreground to-primary">
-        <WidgetHeader className="flex items-center justify-between">
-          <div className="flex items-center gap-x-2">
+      <div className="flex flex-col h-full animate-in fade-in-50 duration-300">
+        <div className="bg-gradient-to-b from-primary to-primary/90 shadow-md">
+          <WidgetHeader className="flex items-center justify-between">
+            <div className="flex items-center gap-x-2 sm:gap-x-3">
+              <Button
+                size="icon"
+                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full shadow-sm transition-all duration-200"
+                onClick={onBack}
+              >
+                <ArrowLeftIcon className="h-4 w-4" />
+              </Button>
+              <h2 className="text-base sm:text-lg font-semibold text-white">
+                Chat
+              </h2>
+            </div>
             <Button
               size="icon"
-              className="bg-white/10 hover:bg-white/20"
-              onClick={onBack}
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full shadow-sm transition-all duration-200"
             >
-              <ArrowLeftIcon />
+              <MenuIcon className="h-4 w-4" />
             </Button>
-            <p>Chat</p>
-          </div>
-          <Button size="icon" className="bg-white/10 hover:bg-white/20">
-            <MenuIcon />
-          </Button>
-        </WidgetHeader>
-      </div>
-
-      <AIConversation className="bg-white">
-        <AIConversationContent>
-          {(messages ?? [])?.map((message) => {
-            return (
-              <AIMessage
-                from={
-                  message.role === "user"
-                    ? "user"
-                    : message.role === "humanAgent"
-                      ? "assistant"
-                      : "assistant"
-                }
-                key={message.id}
-              >
-                <AIMessageContent>
-                  <AIResponse>{message.content}</AIResponse>
-                </AIMessageContent>
-                {message.role === "assistant" && (
-                  <Image
-                    src={"/logo.svg"}
-                    className="h-6 w-6 translate-y-[-6px]"
-                    alt="logo"
-                    width={4}
-                    height={4}
+          </WidgetHeader>
+        </div>
+        <AIConversation className="bg-white/90 backdrop-blur-sm flex-1">
+          <AIConversationContent className="space-y-3 sm:space-y-4 py-3 sm:py-4">
+            {(messages ?? [])?.map((message) => {
+              return (
+                <AIMessage
+                  from={
+                    message.role === "user"
+                      ? "user"
+                      : message.role === "humanAgent"
+                        ? "assistant"
+                        : "assistant"
+                  }
+                  key={message.id}
+                  className="transition-all duration-200 ease-in-out hover:scale-[1.02]"
+                >
+                  <AIMessageContent className="shadow-sm border border-border/50 rounded-xl max-w-[85%] sm:max-w-[75%]">
+                    <AIResponse className="prose prose-sm max-w-none dark:prose-invert">
+                      {message.content}
+                    </AIResponse>
+                  </AIMessageContent>
+                  {message.role === "assistant" && (
+                    <div className="flex translate-y-[-4px] items-center justify-center rounded-full p-1.5 bg-white shadow-sm">
+                      <Image
+                        src={"/logo.svg"}
+                        className="h-5 w-5"
+                        alt="logo"
+                        width={20}
+                        height={20}
+                      />
+                    </div>
+                  )}
+                  {message.role === "humanAgent" && (
+                    <div className="flex translate-y-[-4px] items-center justify-center rounded-full p-1.5 bg-primary shadow-sm">
+                      <User className="size-4 stroke-2 text-white" />
+                    </div>
+                  )}
+                  {/* <AIMessageAvatar src="/logo.svg" /> */}
+                </AIMessage>
+              );
+            })}
+            <AIConversationScrollButton />
+          </AIConversationContent>
+        </AIConversation>
+        <div className="bg-white/80 backdrop-blur-sm p-2 sm:p-3 border-t border-border/50">
+          <Form {...form}>
+            <AIInput
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="border border-primary/30 rounded-xl shadow-sm bg-background/80 backdrop-blur-sm"
+            >
+              <FormField
+                control={form.control}
+                // disabled={conversation?.status === "resolved"}
+                name="message"
+                render={({ field }) => (
+                  <AIInputTextarea
+                    // disabled={conversation?.status === "resolved"}
+                    value={field.value}
+                    onChange={(e) => {
+                      let newValue = e.target.value;
+                      if (
+                        field.value === "" &&
+                        newValue.length === 1 &&
+                        /[a-z]/.test(newValue)
+                      ) {
+                        newValue = newValue.toUpperCase();
+                      }
+                      field.onChange(newValue);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        form.handleSubmit(onSubmit)();
+                      }
+                    }}
+                    placeholder="Type your message here..."
+                    className="placeholder:text-muted-foreground/70 py-2 sm:py-3"
                   />
                 )}
-                {message.role === "humanAgent" && (
-                  <div className="flex translate-y-[-6px] items-center justify-center rounded-full p-1 bg-primary">
-                    <User className="size-4 stroke-2 text-white" />
-                  </div>
-                )}
-                {/* <AIMessageAvatar src="/logo.svg" /> */}
-              </AIMessage>
-            );
-          })}
-        </AIConversationContent>
-      </AIConversation>
-      <div className="bg-white p-2">
-        <Form {...form}>
-          <AIInput
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="border-2 border-primary/30"
-          >
-            <FormField
-              control={form.control}
-              // disabled={conversation?.status === "resolved"}
-              name="message"
-              render={({ field }) => (
-                <AIInputTextarea
-                  // disabled={conversation?.status === "resolved"}
-                  value={field.value}
-                  onChange={(e) => {
-                    let newValue = e.target.value;
-                    if (
-                      field.value === "" &&
-                      newValue.length === 1 &&
-                      /[a-z]/.test(newValue)
-                    ) {
-                      newValue = newValue.toUpperCase();
-                    }
-                    field.onChange(newValue);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      form.handleSubmit(onSubmit)();
-                    }
-                  }}
-                  placeholder="Type your message here..."
-                />
-              )}
-            />
-            <AIInputToolbar>
-              <AIInputTools />
-              <AIInputSubmit
-                disabled={!form.formState.isValid}
-                status="ready"
-                type="submit"
               />
-            </AIInputToolbar>
-          </AIInput>
-        </Form>
+              <AIInputToolbar className="p-1 sm:p-2">
+                <AIInputTools />
+                <AIInputSubmit
+                  disabled={!form.formState.isValid}
+                  status="ready"
+                  type="submit"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-sm transition-all duration-200 h-8 w-8 sm:h-10 sm:w-10"
+                >
+                  <SendIcon className="h-4 w-4" />
+                </AIInputSubmit>
+              </AIInputToolbar>
+            </AIInput>
+          </Form>
+        </div>
       </div>
     </>
   );
