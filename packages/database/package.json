@@ -1,0 +1,18 @@
+{
+  "name": "@workspace/database",
+  "version": "0.0.0",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push --skip-generate"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.9",
+    "prisma": "^6.15.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.15.0"
+  }
+}
