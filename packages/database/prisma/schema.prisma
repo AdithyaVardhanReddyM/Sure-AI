@@ -14,6 +14,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ConversationStatus {
+  unresolved
+  resolved
+  escalated
+}
+
 model User {
   id   String @id @default(uuid())
   name String
@@ -27,14 +33,29 @@ model Agent {
 }
 
 model ContactSession {
-  id        String @id @default(uuid())
-  name      String
-  email     String
-  agentId   String
-  agent     Agent  @relation(fields: [agentId], references: [id])
-  expiresAt BigInt
-  metadata  Json?
+  id            String         @id @default(uuid())
+  name          String
+  email         String
+  agentId       String
+  agent         Agent          @relation(fields: [agentId], references: [id])
+  expiresAt     BigInt
+  metadata      Json?
+  conversations Conversation[]
 
   @@index([expiresAt])
   @@index([agentId])
+}
+
+model Conversation {
+  id               String             @id @default(uuid())
+  threadId         String
+  agentId          String
+  contactSessionId String
+  status           ConversationStatus
+  contactSession   ContactSession     @relation(fields: [contactSessionId], references: [id])
+
+  @@index([agentId])
+  @@index([threadId])
+  @@index([contactSessionId])
+  @@index([status, agentId])
 }

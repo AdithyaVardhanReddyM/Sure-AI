@@ -9,3 +9,4 @@ export const contactSessionIdAtomFamily = atomFamily((agentId: string) =>
 );
 export const errorMessageAtom = atom<string | null>(null);
 export const loadingMessageAtom = atom<string | null>(null);
+export const conversationIdAtom = atom<string | null>(null);
