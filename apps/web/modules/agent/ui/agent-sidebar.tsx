@@ -15,17 +15,18 @@ import {
 import { cn } from "@workspace/ui/lib/utils";
 import {
   Database,
-  InboxIcon,
+  ArrowLeftIcon,
   PaletteIcon,
   Send,
   Settings2,
   UploadCloud,
+  MessageSquareMore,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const Items1 = [
-  { title: "Conversations", url: "/conversations", icon: InboxIcon },
+  { title: "Conversations", url: "/conversations", icon: MessageSquareMore },
   { title: "Sources", url: "/sources", icon: Database },
 ];
 
@@ -133,6 +134,12 @@ const AgentSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
+        <SidebarMenuButton asChild className="border-dashed border-2">
+          <Link href={`/dashboard`}>
+            <ArrowLeftIcon className="size-4" />
+            <span>Dashboard</span>
+          </Link>
+        </SidebarMenuButton>
         <UserButton
           showName
           appearance={{
