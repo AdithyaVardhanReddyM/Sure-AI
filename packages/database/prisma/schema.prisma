@@ -20,9 +20,10 @@ enum ConversationStatus {
   escalated
 }
 
-model User {
-  id   String @id @default(uuid())
-  name String
+enum Role {
+  humanAgent
+  assistant
+  user
 }
 
 model Agent {
@@ -33,14 +34,13 @@ model Agent {
 }
 
 model ContactSession {
-  id            String         @id @default(uuid())
-  name          String
-  email         String
-  agentId       String
-  agent         Agent          @relation(fields: [agentId], references: [id])
-  expiresAt     BigInt
-  metadata      Json?
-  conversations Conversation[]
+  id        String @id @default(uuid())
+  name      String
+  email     String
+  agentId   String
+  agent     Agent  @relation(fields: [agentId], references: [id])
+  expiresAt BigInt
+  metadata  Json?
 
   @@index([expiresAt])
   @@index([agentId])
@@ -48,14 +48,27 @@ model ContactSession {
 
 model Conversation {
   id               String             @id @default(uuid())
-  threadId         String
+  // threadId         String
   agentId          String
   contactSessionId String
   status           ConversationStatus
-  contactSession   ContactSession     @relation(fields: [contactSessionId], references: [id])
+  messages         Message[]
 
   @@index([agentId])
-  @@index([threadId])
+  // @@index([threadId])
   @@index([contactSessionId])
   @@index([status, agentId])
+}
+
+model Message {
+  id               String       @id @default(uuid())
+  conversationId   String
+  contactSessionId String
+  role             Role
+  content          String       @db.Text
+  createdAt        DateTime     @default(now())
+  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([contactSessionId])
 }
