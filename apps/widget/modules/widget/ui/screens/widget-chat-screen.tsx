@@ -84,6 +84,54 @@ export const WidgetChatScreen = () => {
     }
   }, [conversationId, contactSessionId]);
 
+  // SSE listener for real-time message updates
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const eventSource = new EventSource("/api/events/messages");
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (
+          data.type === "new_message" &&
+          data.conversationId === conversationId
+        ) {
+          // Add the new message to the state
+          setMessages((prevMessages) => {
+            if (!prevMessages) return [data];
+            // Check if message already exists to avoid duplicates
+            const exists = prevMessages.some(
+              (msg) => msg.id === data.messageId
+            );
+            if (exists) return prevMessages;
+            return [
+              ...prevMessages,
+              {
+                id: data.messageId,
+                conversationId: data.conversationId,
+                contactSessionId: data.contactSessionId,
+                role: data.role,
+                content: data.content,
+                createdAt: new Date(data.createdAt),
+              },
+            ];
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing SSE message:", error);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE connection error:", error);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [conversationId]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

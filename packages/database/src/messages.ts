@@ -160,6 +160,32 @@ export async function createMessageDashboard(
         content: prompt,
       },
     });
+
+    // Notify the widget app about the new message for real-time updates
+    try {
+      const widgetAppUrl = "http://localhost:3001";
+
+      // Send event for the new message
+      await fetch(`${widgetAppUrl}/api/events/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "new_message",
+          messageId: humanMessage.id,
+          conversationId,
+          contactSessionId: conversation.contactSessionId,
+          role: humanMessage.role,
+          content: humanMessage.content,
+          createdAt: humanMessage.createdAt.toISOString(),
+        }),
+      });
+    } catch (error) {
+      console.error("Error notifying widget app about message:", error);
+    }
+
+    return humanMessage;
   } catch (error) {
     console.error("Error creating message:", error);
     throw error;
