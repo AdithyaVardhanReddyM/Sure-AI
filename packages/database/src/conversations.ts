@@ -132,6 +132,9 @@ export async function getManyConversations(contactSessionId: string) {
       where: {
         contactSessionId,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     const conversationsWithLastMessage = await Promise.all(

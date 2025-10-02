@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { WidgetHeader } from "../components/widget-header";
-import { ArrowLeftIcon, MenuIcon } from "lucide-react";
+import { ArrowLeftIcon, MenuIcon, User } from "lucide-react";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   agentIdAtom,
@@ -138,7 +138,13 @@ export const WidgetChatScreen = () => {
           {(messages ?? [])?.map((message) => {
             return (
               <AIMessage
-                from={message.role === "user" ? "user" : "assistant"}
+                from={
+                  message.role === "user"
+                    ? "user"
+                    : message.role === "humanAgent"
+                      ? "assistant"
+                      : "assistant"
+                }
                 key={message.id}
               >
                 <AIMessageContent>
@@ -152,6 +158,11 @@ export const WidgetChatScreen = () => {
                     width={4}
                     height={4}
                   />
+                )}
+                {message.role === "humanAgent" && (
+                  <div className="flex translate-y-[-6px] items-center justify-center rounded-full p-1 bg-primary">
+                    <User className="size-4 stroke-2 text-white" />
+                  </div>
                 )}
                 {/* <AIMessageAvatar src="/logo.svg" /> */}
               </AIMessage>

@@ -55,15 +55,16 @@ export const ConversationsPanel = () => {
       });
   }, [agentId]);
 
-  // SSE connection for real-time updates
+  // SSE connections for real-time updates
   useEffect(() => {
     if (!agentId) return;
 
-    const eventSource = new EventSource(
+    // SSE for conversation events
+    const conversationEventSource = new EventSource(
       `/api/events/conversations?agentId=${agentId}`
     );
 
-    eventSource.onmessage = (event) => {
+    conversationEventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
 
@@ -80,16 +81,63 @@ export const ConversationsPanel = () => {
             });
         }
       } catch (error) {
-        console.error("Error parsing SSE event:", error);
+        console.error("Error parsing conversation SSE event:", error);
       }
     };
 
-    eventSource.onerror = (error) => {
+    // SSE for message events
+    const messageEventSource = new EventSource(
+      `/api/events/messages?agentId=${agentId}`
+    );
+
+    messageEventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "new_message") {
+          // Update the specific conversation with the new message as lastMessage
+          setConversations((prevConversations) =>
+            prevConversations.map((conv) => {
+              if (conv && conv.id === data.conversationId) {
+                // Only update if this is a more recent message
+                const newMessageTime = new Date(data.createdAt).getTime();
+                const currentLastMessageTime = conv.lastMessage
+                  ? new Date(conv.lastMessage.createdAt).getTime()
+                  : 0;
+
+                if (newMessageTime > currentLastMessageTime) {
+                  return {
+                    ...conv,
+                    lastMessage: {
+                      id: data.messageId,
+                      conversationId: data.conversationId,
+                      contactSessionId: data.contactSessionId,
+                      role: data.role,
+                      content: data.content,
+                      createdAt: new Date(data.createdAt),
+                    },
+                  };
+                }
+              }
+              return conv;
+            })
+          );
+        }
+      } catch (error) {
+        console.error("Error parsing message SSE event:", error);
+      }
+    };
+
+    const handleError = (error: Event) => {
       console.error("SSE connection error:", error);
     };
 
+    conversationEventSource.onerror = handleError;
+    messageEventSource.onerror = handleError;
+
     return () => {
-      eventSource.close();
+      conversationEventSource.close();
+      messageEventSource.close();
     };
   }, [agentId]);
 

@@ -58,42 +58,76 @@ export async function createMessage(
     });
 
     // Make POST call to AI service with full history
+    const aiResponse = await fetch("http://127.0.0.1:8000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: fullPrompt,
+      }),
+    });
+
+    const aiData = await aiResponse.json();
+    const aiContent =
+      aiData.response || "I'm sorry, I couldn't generate a response.";
+
+    // Create the assistant message
+    const assistantMessage = await prisma.message.create({
+      data: {
+        conversationId,
+        contactSessionId,
+        role: "assistant",
+        content: aiContent,
+      },
+    });
+
+    // Notify the web app about both new messages for real-time updates
     try {
-      const aiResponse = await fetch("http://127.0.0.1:8000/chat", {
+      const webAppUrl =
+        process.env.NEXT_PUBLIC_WEB_APP_URL || "http://localhost:3000";
+
+      // Send event for user message
+      await fetch(`${webAppUrl}/api/events/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: fullPrompt,
+          type: "new_message",
+          messageId: userMessage.id,
+          conversationId,
+          contactSessionId,
+          role: userMessage.role,
+          content: userMessage.content,
+          createdAt: userMessage.createdAt.toISOString(),
         }),
       });
 
-      if (!aiResponse.ok) {
-        throw new Error(`AI service error: ${aiResponse.status}`);
-      }
-
-      const aiData = await aiResponse.json();
-      const aiContent =
-        aiData.response || "I'm sorry, I couldn't generate a response.";
-
-      // Create the assistant message
-      const assistantMessage = await prisma.message.create({
-        data: {
+      // Send event for assistant message
+      await fetch(`${webAppUrl}/api/events/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "new_message",
+          messageId: assistantMessage.id,
           conversationId,
           contactSessionId,
-          role: "assistant",
-          content: aiContent,
-        },
+          role: assistantMessage.role,
+          content: assistantMessage.content,
+          createdAt: assistantMessage.createdAt.toISOString(),
+        }),
       });
-
-      return {
-        userMessage,
-        assistantMessage,
-      };
-    } catch (aiError) {
-      console.error("Error calling AI service:", aiError);
+    } catch (error) {
+      console.error("Error notifying web app about messages:", error);
     }
+
+    return {
+      userMessage,
+      assistantMessage,
+    };
   } catch (error) {
     console.error("Error creating message:", error);
     throw error;

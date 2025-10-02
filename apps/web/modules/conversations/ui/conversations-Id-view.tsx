@@ -34,6 +34,7 @@ import {
   getOneDashboard,
   Message,
 } from "@workspace/database";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -46,6 +47,9 @@ export const ConversationIdView = ({
 }: {
   conversationId: string;
 }) => {
+  const pathname = usePathname();
+  const agentId = pathname.split("/")[2];
+
   const [conversation, setConversation] = useState<{
     id: string;
     agentId: string;
@@ -62,7 +66,59 @@ export const ConversationIdView = ({
 
   useEffect(() => {
     getManyDashboard(conversationId, {}).then(setMessages);
-  }, []);
+  }, [conversationId]);
+
+  // SSE connection for real-time message updates
+  useEffect(() => {
+    if (!conversationId || !agentId) return;
+
+    const eventSource = new EventSource(
+      `/api/events/messages?agentId=${agentId}`
+    );
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (
+          data.type === "new_message" &&
+          data.conversationId === conversationId
+        ) {
+          // Add the new message to the messages state
+          setMessages((prevMessages) => {
+            if (!prevMessages) return prevMessages;
+
+            const newMessage = {
+              id: data.messageId,
+              conversationId: data.conversationId,
+              contactSessionId: data.contactSessionId,
+              role: data.role,
+              content: data.content,
+              createdAt: new Date(data.createdAt),
+            };
+
+            // Check if message already exists to avoid duplicates
+            const messageExists = prevMessages.some(
+              (msg) => msg.id === data.messageId
+            );
+            if (messageExists) return prevMessages;
+
+            return [...prevMessages, newMessage];
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing SSE event:", error);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE connection error:", error);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [conversationId, agentId]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -104,7 +160,7 @@ export const ConversationIdView = ({
                 />
               )}
               {message.role === "humanAgent" && (
-                <div className="flex items-center justify-center rounded-full p-1 bg-primary">
+                <div className="flex items-center translate-y-[-6px] justify-center rounded-full p-1 bg-primary">
                   <User className="size-4 stroke-2 text-white" />
                 </div>
               )}
