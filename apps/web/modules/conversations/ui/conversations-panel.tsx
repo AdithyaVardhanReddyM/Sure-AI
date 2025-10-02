@@ -149,18 +149,18 @@ export const ConversationsPanel = () => {
                   : undefined;
                 return (
                   <Link
-                    href={`${pathname}/${conversation?.id}`}
+                    href={`${pathname.split("/")[4] ? pathname.split("/").slice(0, 4).join("/") : pathname}/${conversation?.id}`}
                     className={cn(
                       "relative flex cursor-pointer items-start gap-3 border-b p-4 py-5 text-sm leading-tight hover:bg-accent hover:text-accent-foreground",
-                      pathname === `/conversation/${conversation?.id}` &&
+                      pathname.split("/")[4] === `${conversation?.id}` &&
                         "bg-accent text-accent-foreground"
                     )}
                     key={conversation?.id}
                   >
                     <div
                       className={cn(
-                        "-translate-y-1/2 absolute top-1/2 left-0 h-[64%] w-1 rounded-r-full bg-neutral-300 opacity-0 transition-opacity",
-                        pathname === `/conversation/${conversation?.id}` &&
+                        "-translate-y-1/2 absolute top-1/2 left-0 h-[64%] w-1 rounded-r-full bg-primary opacity-0 transition-opacity",
+                        pathname.split("/")[4] === `${conversation?.id}` &&
                           "opacity-100"
                       )}
                     />

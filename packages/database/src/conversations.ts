@@ -200,3 +200,30 @@ export async function getConversationsDashboard(agentId: string) {
     return null;
   }
 }
+
+export async function getOneDashboard(conversationId: string) {
+  const conversation = await prisma.conversation.findUnique({
+    where: {
+      id: conversationId,
+    },
+  });
+
+  if (!conversation) {
+    throw { code: "NOT_FOUND", message: "Conversation not found" };
+  }
+
+  const contactSession = await prisma.contactSession.findUnique({
+    where: {
+      id: conversation.contactSessionId,
+    },
+  });
+
+  if (!contactSession) {
+    throw { code: "NOT_FOUND", message: "Contact session not found" };
+  }
+
+  return {
+    ...conversation,
+    contactSession,
+  };
+}

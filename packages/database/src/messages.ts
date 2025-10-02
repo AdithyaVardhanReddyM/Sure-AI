@@ -100,6 +100,38 @@ export async function createMessage(
   }
 }
 
+export async function createMessageDashboard(
+  conversationId: string,
+  //   role: Role,
+  prompt: string
+) {
+  try {
+    // Verify the conversation exists
+    const conversation = await prisma.conversation.findUnique({
+      where: {
+        id: conversationId,
+      },
+    });
+
+    if (!conversation) {
+      throw { code: "NOT_FOUND", message: "Conversation not found" };
+    }
+
+    // Create the user message
+    const humanMessage = await prisma.message.create({
+      data: {
+        conversationId,
+        contactSessionId: conversation.contactSessionId as string,
+        role: "humanAgent",
+        content: prompt,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating message:", error);
+    throw error;
+  }
+}
+
 export async function getMany(
   conversationId: string,
   contactSessionId: string,
@@ -150,6 +182,30 @@ export async function getLastMessage(
     return lastMessage;
   } catch (error) {
     console.error("Error fetching last message:", error);
+    throw error;
+  }
+}
+
+export async function getManyDashboard(
+  conversationId: string,
+  paginationOpts: { limit?: number; offset?: number }
+) {
+  try {
+    // Fetch messages with pagination
+    const messages = await prisma.message.findMany({
+      where: {
+        conversationId,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+      skip: paginationOpts.offset || 0,
+      take: paginationOpts.limit || 50, // default limit
+    });
+
+    return messages;
+  } catch (error) {
+    console.error("Error fetching messages:", error);
     throw error;
   }
 }

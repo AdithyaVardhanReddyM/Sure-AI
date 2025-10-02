@@ -8,5 +8,11 @@ export {
   getOne,
   getConversationById,
   getConversationsDashboard,
+  getOneDashboard,
 } from "./conversations"; // exports conversation related functions
-export { createMessage, getMany } from "./messages"; // exports message related functions
+export {
+  createMessage,
+  getMany,
+  getManyDashboard,
+  createMessageDashboard,
+} from "./messages"; // exports message related functions
