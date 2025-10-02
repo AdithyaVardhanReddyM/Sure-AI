@@ -21,4 +21,5 @@ export {
   deleteFile,
   getFilesByUserId,
   updateFileAgent,
+  updateFileProcessed,
 } from "./files";

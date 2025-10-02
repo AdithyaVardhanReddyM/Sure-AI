@@ -90,6 +90,7 @@ export async function createMessage(
         },
         body: JSON.stringify({
           message: fullPrompt,
+          agentId: conversation.agentId,
         }),
       });
 

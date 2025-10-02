@@ -46,3 +46,14 @@ export async function updateFileAgent(fileId: string, agentId: string | null) {
     },
   });
 }
+
+export async function updateFileProcessed(fileId: string, processed: boolean) {
+  return await prisma.files.update({
+    where: {
+      id: fileId,
+    },
+    data: {
+      processed,
+    },
+  });
+}

@@ -21,7 +21,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
-import { FileText, Plus, X, Upload } from "lucide-react";
+import { FileText, Plus, X, Upload, Play } from "lucide-react";
 import Link from "next/link";
 
 interface File {
@@ -29,6 +29,7 @@ interface File {
   fileName: string;
   fileUrl: string;
   agentId: string | null;
+  processed: boolean;
 }
 
 interface SourcesClientProps {
@@ -39,6 +40,8 @@ export default function SourcesClient({ agentId }: SourcesClientProps) {
   const { userId } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
+  const [processingFileId, setProcessingFileId] = useState<string | null>(null);
+  const [processingAll, setProcessingAll] = useState(false);
 
   useEffect(() => {
     if (userId) {
@@ -74,6 +77,12 @@ export default function SourcesClient({ agentId }: SourcesClientProps) {
   };
 
   const handleRemoveFromAgent = async (fileId: string) => {
+    const file = files.find((f) => f.id === fileId);
+    if (file?.processed) {
+      toast.error("Cannot remove processed files from agent");
+      return;
+    }
+
     try {
       await updateFileAgent(fileId, null);
       // Update the local state
@@ -86,6 +95,66 @@ export default function SourcesClient({ agentId }: SourcesClientProps) {
     } catch (error) {
       console.error("Error removing file from agent:", error);
       toast.error("Failed to remove file from agent knowledge");
+    }
+  };
+
+  const handleProcessFile = async (file: File) => {
+    if (processingFileId) return;
+
+    setProcessingFileId(file.id);
+    try {
+      const response = await fetch("/api/process-files", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fileId: file.id,
+          url: file.fileUrl,
+          filename: file.fileName,
+          agentId,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to process file");
+      }
+
+      // Update local state
+      setFiles(
+        files.map((f) => (f.id === file.id ? { ...f, processed: true } : f))
+      );
+      toast.success(`File "${file.fileName}" processed successfully`);
+    } catch (error) {
+      console.error("Error processing file:", error);
+      toast.error(
+        `Failed to process file: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
+    } finally {
+      setProcessingFileId(null);
+    }
+  };
+
+  const handleProcessAllFiles = async () => {
+    const agentFiles = files.filter(
+      (f) => f.agentId === agentId && !f.processed
+    );
+    if (agentFiles.length === 0) {
+      toast.error("No unprocessed files to process");
+      return;
+    }
+
+    setProcessingAll(true);
+    try {
+      for (const file of agentFiles) {
+        await handleProcessFile(file);
+      }
+      toast.success("All files processed successfully");
+    } catch (error) {
+      console.error("Error processing all files:", error);
+    } finally {
+      setProcessingAll(false);
     }
   };
 
@@ -200,41 +269,72 @@ export default function SourcesClient({ agentId }: SourcesClientProps) {
                         </div>
                       </TableCell>
                       <TableCell className="py-4">
-                        {file.agentId === agentId ? (
-                          <Badge
-                            variant="default"
-                            className="bg-green-500/10 text-green-700 border-green-500/20 hover:bg-green-500/10"
-                          >
-                            Active for this agent
-                          </Badge>
-                        ) : file.agentId ? (
-                          <Badge
-                            variant="secondary"
-                            className="bg-yellow-500/10 text-yellow-700 border-yellow-500/20 hover:bg-yellow-500/10"
-                          >
-                            Used by another agent
-                          </Badge>
-                        ) : (
-                          <Badge
-                            variant="outline"
-                            className="border-border text-muted-foreground"
-                          >
-                            Available
-                          </Badge>
-                        )}
+                        <div className="flex flex-col gap-1">
+                          {file.agentId === agentId ? (
+                            <Badge
+                              variant="default"
+                              className="bg-green-500/10 text-green-700 border-green-500/20 hover:bg-green-500/10"
+                            >
+                              Active for this agent
+                            </Badge>
+                          ) : file.agentId ? (
+                            <Badge
+                              variant="secondary"
+                              className="bg-yellow-500/10 text-yellow-700 border-yellow-500/20 hover:bg-yellow-500/10"
+                            >
+                              Used by another agent
+                            </Badge>
+                          ) : (
+                            <Badge
+                              variant="outline"
+                              className="border-border text-muted-foreground"
+                            >
+                              Available
+                            </Badge>
+                          )}
+                          {file.processed && (
+                            <Badge
+                              variant="default"
+                              className="bg-blue-500/10 text-blue-700 border-blue-500/20 hover:bg-blue-500/10"
+                            >
+                              Processed
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-right pr-6 py-4">
                         <div className="flex gap-2 justify-end">
                           {file.agentId === agentId ? (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleRemoveFromAgent(file.id)}
-                              className="gap-1 h-8 px-3 text-xs border-border hover:bg-destructive/5"
-                            >
-                              <X className="h-3 w-3" />
-                              Remove
-                            </Button>
+                            <>
+                              {!file.processed && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleProcessFile(file)}
+                                  disabled={processingFileId === file.id}
+                                  className="gap-1 h-8 px-3 text-xs border-border hover:bg-primary/5"
+                                >
+                                  {processingFileId === file.id ? (
+                                    "Processing..."
+                                  ) : (
+                                    <>
+                                      <Play className="h-3 w-3" />
+                                      Process
+                                    </>
+                                  )}
+                                </Button>
+                              )}
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRemoveFromAgent(file.id)}
+                                disabled={file.processed}
+                                className="gap-1 h-8 px-3 text-xs border-border hover:bg-destructive/5"
+                              >
+                                <X className="h-3 w-3" />
+                                Remove
+                              </Button>
+                            </>
                           ) : (
                             <Button
                               size="sm"
@@ -254,10 +354,49 @@ export default function SourcesClient({ agentId }: SourcesClientProps) {
               </Table>
               {files.length > 0 && (
                 <div className="px-6 py-4 bg-muted/20 border-t border-border/20">
-                  <p className="text-xs text-muted-foreground">
-                    {files.filter((f) => f.agentId === agentId).length} of{" "}
-                    {files.length} sources active for this agent
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">
+                      {files.filter((f) => f.agentId === agentId).length} of{" "}
+                      {files.length} sources active for this agent
+                      {files.filter((f) => f.agentId === agentId && f.processed)
+                        .length > 0 && (
+                        <span className="ml-2">
+                          •{" "}
+                          {
+                            files.filter(
+                              (f) => f.agentId === agentId && f.processed
+                            ).length
+                          }{" "}
+                          processed
+                        </span>
+                      )}
+                    </p>
+                    {files.filter((f) => f.agentId === agentId && !f.processed)
+                      .length > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleProcessAllFiles}
+                        disabled={processingAll || processingFileId !== null}
+                        className="gap-1 h-8 px-3 text-xs"
+                      >
+                        {processingAll ? (
+                          "Processing All..."
+                        ) : (
+                          <>
+                            <Play className="h-3 w-3" />
+                            Process All (
+                            {
+                              files.filter(
+                                (f) => f.agentId === agentId && !f.processed
+                              ).length
+                            }
+                            )
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

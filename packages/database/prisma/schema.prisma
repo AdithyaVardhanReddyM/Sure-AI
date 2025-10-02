@@ -79,5 +79,5 @@ model Files {
   fileUrl   String
   fileName  String
   userId    String
-  prossesed Boolean @default(false)
+  processed Boolean @default(false)
 }

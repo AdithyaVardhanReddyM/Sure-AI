@@ -51,6 +51,7 @@ export function Uploader() {
       fileName: string;
       fileUrl: string;
       userId: string;
+      processed?: boolean;
       isDeleting?: boolean;
     }>
   >([]);
@@ -93,7 +94,7 @@ export function Uploader() {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              fileUrl: `${process.env.NEXT_PUBLIC_AWS_ENDPOINT_URL_S3}/${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}/${fileToRemove.key}`,
+              fileUrl: `${process.env.NEXT_PUBLIC_AWS_ENDPOINT_URL_S3}/${fileToRemove.key}`,
             }),
           });
           if (!response.ok) {
@@ -289,7 +290,7 @@ export function Uploader() {
       // 3. Update database after successful upload
       if (user?.id) {
         try {
-          const fileUrl = `${process.env.NEXT_PUBLIC_AWS_ENDPOINT_URL_S3}/${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}/${key}`;
+          const fileUrl = `${process.env.NEXT_PUBLIC_AWS_ENDPOINT_URL_S3}/${key}`;
           const response = await fetch("/api/files", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -581,7 +582,7 @@ export function Uploader() {
                               onClick={() =>
                                 removeExistingFile(file.id, file.fileUrl)
                               }
-                              disabled={isDeleting}
+                              disabled={isDeleting || file.processed}
                               className="h-8 w-8 p-0 hover:bg-destructive hover:text-destructive-foreground"
                             >
                               {isDeleting ? (

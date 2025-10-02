@@ -8,7 +8,7 @@ import { auth } from "@clerk/nextjs/server";
 import { uploadFile } from "@workspace/database";
 
 const BUCKET_NAME = process.env.S3_BUCKET_NAME;
-const S3_ENDPOINT = "https://t3.storage.dev"; // From S3Client configuration
+const S3_ENDPOINT = "https://saya.t3.storage.dev"; // From S3Client configuration
 
 const uploeadRequestSchema = z.object({
   filename: z.string(),
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     const { filename, contentType, size } = validation.data;
 
     const uniqueKey = `${uuidv4()}-${filename}`;
-    const fileUrl = `${S3_ENDPOINT}/${BUCKET_NAME}/${uniqueKey}`;
+    const fileUrl = `${S3_ENDPOINT}/${uniqueKey}`;
 
     // Create database record before generating presigned URL
     await uploadFile(userId, filename, fileUrl);
