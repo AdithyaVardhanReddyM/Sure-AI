@@ -5,13 +5,15 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
 }
 
 enum ConversationStatus {
@@ -96,6 +98,17 @@ model WidgetSettings {
   conversationStartMessage String?
   suggestion               Json?
   links                    Json?
+
+  @@index([agentId])
+}
+
+model Embeddings {
+  id             String                      @id @default(uuid())
+  agentId        String
+  text           String                      @db.Text
+  vectorMetadata Json?
+  vector         Unsupported("vector(1024)")
+  createdAt      DateTime                    @default(now())
 
   @@index([agentId])
 }
