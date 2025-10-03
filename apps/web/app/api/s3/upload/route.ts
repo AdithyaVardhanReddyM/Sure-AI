@@ -8,7 +8,7 @@ import { auth } from "@clerk/nextjs/server";
 import { uploadFile } from "@workspace/database";
 
 const BUCKET_NAME = process.env.S3_BUCKET_NAME;
-const S3_ENDPOINT = "https://saya.t3.storage.dev"; // From S3Client configuration
+const S3_ENDPOINT = "https://sure.t3.storage.dev"; // From S3Client configuration
 
 const uploeadRequestSchema = z.object({
   filename: z.string(),

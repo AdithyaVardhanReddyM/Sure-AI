@@ -5,15 +5,13 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider        = "prisma-client-js"
-  output          = "../generated/prisma"
-  previewFeatures = ["postgresqlExtensions"]
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  extensions = [vector]
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum ConversationStatus {
@@ -28,18 +26,14 @@ enum Role {
 }
 
 model Agent {
-  id                String           @id @default(uuid())
-  name              String
-  clerkId           String
-  CalEnabled        Boolean?
-  StripeEnabled     Boolean?
-  SlackEnabled      Boolean?
-  CalUrl            String?
-  STRIPE_API_KEY    String?          @db.Text
-  SLACK_BOT_TOKEN   String?          @db.Text
-  SLACK_TEAM_ID     String?          @db.Text
-  SLACK_CHANNEL_IDS String?          @db.Text
-  contactSessions   ContactSession[]
+  id              String           @id @default(uuid())
+  name            String
+  clerkId         String
+  CalEnabled      Boolean?
+  StripeEnabled   Boolean?
+  SlackEnabled    Boolean?
+  CalUrl          String?
+  contactSessions ContactSession[]
 }
 
 model ContactSession {
@@ -98,17 +92,6 @@ model WidgetSettings {
   conversationStartMessage String?
   suggestion               Json?
   links                    Json?
-
-  @@index([agentId])
-}
-
-model Embeddings {
-  id             String                      @id @default(uuid())
-  agentId        String
-  text           String                      @db.Text
-  vectorMetadata Json?
-  vector         Unsupported("vector(1024)")
-  createdAt      DateTime                    @default(now())
 
   @@index([agentId])
 }

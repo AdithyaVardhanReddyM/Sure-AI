@@ -16,7 +16,7 @@ export default function HomePage() {
             <Link href="/" className="flex items-center gap-3">
               <Image
                 src="/logo_full.svg"
-                alt="Saya"
+                alt="Sure"
                 width={140}
                 height={28}
                 priority

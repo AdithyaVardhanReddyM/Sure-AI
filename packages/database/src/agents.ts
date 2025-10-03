@@ -100,12 +100,79 @@ export async function updateAgentSlackSettings(
         id: agentId,
       },
       data: {
-        SLACK_BOT_TOKEN: slackBotToken,
-        SLACK_TEAM_ID: slackTeamId,
-        SLACK_CHANNEL_IDS: slackChannelIds,
         SlackEnabled: slackEnabled,
       },
     });
+
+    if (
+      slackBotToken.trim() === "" &&
+      slackTeamId.trim() === "" &&
+      slackChannelIds.trim() === ""
+    ) {
+      // Delete Slack secrets from Doppler
+      const secretsToDelete = [
+        `SLACK_BOT_TOKEN_${agentId.replace(/-/g, "_").toUpperCase()}`,
+        `SLACK_TEAM_ID_${agentId.replace(/-/g, "_").toUpperCase()}`,
+        `SLACK_CHANNEL_IDS_${agentId.replace(/-/g, "_").toUpperCase()}`,
+      ];
+      for (const secret of secretsToDelete) {
+        const response = await fetch(
+          `https://api.doppler.com/v3/configs/config/secret?project=sure-ai&config=prd&name=${secret}`,
+          {
+            method: "DELETE",
+            headers: {
+              accept: "application/json",
+              Authorization: `Bearer ${process.env.DOPPLER_TOKEN}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          console.error(
+            `Error deleting Doppler secret ${secret}:`,
+            response.statusText
+          );
+          return {
+            success: false,
+            error: `Failed to delete ${secret} from Doppler`,
+          };
+        }
+      }
+    } else {
+      // Update Slack secrets in Doppler
+      const response = await fetch(
+        "https://api.doppler.com/v3/configs/config/secrets",
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+            Authorization: `Bearer ${process.env.DOPPLER_TOKEN}`,
+          },
+          body: JSON.stringify({
+            project: "sure-ai",
+            config: "prd",
+            secrets: {
+              [`SLACK_BOT_TOKEN_${agentId.replace(/-/g, "_").toUpperCase()}`]:
+                slackBotToken,
+              [`SLACK_TEAM_ID_${agentId.replace(/-/g, "_").toUpperCase()}`]:
+                slackTeamId,
+              [`SLACK_CHANNEL_IDS_${agentId.replace(/-/g, "_").toUpperCase()}`]:
+                slackChannelIds,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Error updating Doppler secrets:", response.statusText);
+        return {
+          success: false,
+          error: "Failed to update Slack secrets in Doppler",
+        };
+      }
+    }
+
     return { success: true, agent };
   } catch (error) {
     console.error("Error updating Slack settings:", error);
@@ -124,10 +191,66 @@ export async function updateAgentStripeSettings(
         id: agentId,
       },
       data: {
-        STRIPE_API_KEY: stripeApiKey,
         StripeEnabled: stripeEnabled,
       },
     });
+
+    if (stripeApiKey.trim() === "") {
+      // Delete Stripe API key from Doppler
+      const response = await fetch(
+        `https://api.doppler.com/v3/configs/config/secret?project=sure-ai&config=prd&name=STRIPE_API_KEY_${agentId.replace(/-/g, "_").toUpperCase()}`,
+        {
+          method: "DELETE",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${process.env.DOPPLER_TOKEN}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Error deleting Doppler secret:", response.statusText);
+        return {
+          success: false,
+          error: "Failed to delete Stripe API key from Doppler",
+        };
+      }
+    } else {
+      // Update Stripe API key in Doppler
+      const response = await fetch(
+        "https://api.doppler.com/v3/configs/config/secrets",
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+            Authorization: `Bearer ${process.env.DOPPLER_TOKEN}`,
+          },
+          body: JSON.stringify({
+            project: "sure-ai",
+            config: "prd",
+            secrets: {
+              [`STRIPE_API_KEY_${agentId.replace(/-/g, "_").toUpperCase()}`]:
+                stripeApiKey,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          "Error updating Doppler secret:",
+          response.statusText,
+          errorText
+        );
+        return {
+          success: false,
+          error: "Failed to update Stripe API key in Doppler",
+        };
+      }
+    }
+
     return { success: true, agent };
   } catch (error) {
     console.error("Error updating Stripe settings:", error);

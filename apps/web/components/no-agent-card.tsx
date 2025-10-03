@@ -19,7 +19,7 @@ const NoAgentCard = (props: Props) => {
         <h3 className="text-xl font-semibold mb-4">Oops! No agents yet</h3>
         <p>
           Automate support, marketing and answering customer questions by
-          creating your first AI Agent in Saya.
+          creating your first AI Agent in Sure.
         </p>
       </div>
     </div>

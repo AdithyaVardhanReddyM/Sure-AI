@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { deleteFile } from "@workspace/database";
 
 const BUCKET_NAME = process.env.S3_BUCKET_NAME;
-const S3_ENDPOINT = "https://saya.t3.storage.dev"; // From S3Client configuration
+const S3_ENDPOINT = "https://sure.t3.storage.dev"; // From S3Client configuration
 
 export async function DELETE(request: Request) {
   try {
