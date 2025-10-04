@@ -115,3 +115,18 @@ model Candidate {
   resumeText     String @db.Text
   report         Json?
 }
+
+model Leads {
+  id      String @id @default(uuid())
+  name    String
+  email   String
+  agentId String
+}
+
+model EmailTemplates {
+  id          String   @id @default(uuid())
+  name        String
+  agentId     String
+  htmlContent String   @db.Text
+  createdAt   DateTime @default(now())
+}

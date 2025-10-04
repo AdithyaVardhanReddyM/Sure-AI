@@ -73,6 +73,28 @@ export async function createContactSession(
       },
     });
 
+    // Create lead if not exists
+    try {
+      const existingLead = await prisma.leads.findFirst({
+        where: {
+          email: email,
+          agentId: agentId,
+        },
+      });
+
+      if (!existingLead) {
+        await prisma.leads.create({
+          data: {
+            name: name,
+            email: email,
+            agentId: agentId,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error creating lead:", error);
+    }
+
     return { success: true, contactSession };
   } catch (error) {
     console.error("Error creating contact session:", error);
