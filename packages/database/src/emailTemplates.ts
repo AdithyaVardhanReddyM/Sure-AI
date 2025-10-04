@@ -113,7 +113,7 @@ export async function updateEmailTemplate(
 export async function generateEmailSchema(prompt: string) {
   try {
     const response = await fetch(
-      "http://127.0.0.1:8000/generate-email-schema",
+      "https://sure-widget-backend.onrender.com/generate-email-schema",
       {
         method: "POST",
         headers: {

@@ -41,7 +41,7 @@ model ContactSession {
   name      String
   email     String
   agentId   String
-  agent     Agent  @relation(fields: [agentId], references: [id])
+  agent     Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
   expiresAt BigInt
   metadata  Json?
 

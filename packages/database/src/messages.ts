@@ -98,20 +98,23 @@ export async function createMessage(
       }
 
       // Make POST call to AI service with full history
-      const aiResponse = await fetch("http://127.0.0.1:8000/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: fullPrompt,
-          agentId: conversation.agentId,
-          CalEnabled: agent?.CalEnabled,
-          StripeEnabled: agent?.StripeEnabled,
-          SlackEnabled: agent?.SlackEnabled,
-          CalUrl: agent?.CalUrl,
-        }),
-      });
+      const aiResponse = await fetch(
+        "https://sure-widget-backend.onrender.com/chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: fullPrompt,
+            agentId: conversation.agentId,
+            CalEnabled: agent?.CalEnabled,
+            StripeEnabled: agent?.StripeEnabled,
+            SlackEnabled: agent?.SlackEnabled,
+            CalUrl: agent?.CalUrl,
+          }),
+        }
+      );
 
       const aiData = await aiResponse.json();
       const aiContent =

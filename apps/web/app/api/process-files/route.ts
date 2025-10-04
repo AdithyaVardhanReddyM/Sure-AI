@@ -21,17 +21,20 @@ export async function POST(request: Request) {
     }
 
     // Send request to localhost:8000/process-file
-    const response = await fetch("http://localhost:8000/process-file", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        url,
-        filename,
-        agentId,
-      }),
-    });
+    const response = await fetch(
+      "https://sure-widget-backend.onrender.com/process-file",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url,
+          filename,
+          agentId,
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();

@@ -67,7 +67,10 @@ export default function AgentDashboardCard({
             fill={true}
             className="object-cover"
           />
-          <div className="absolute top-2 right-2">
+          <div
+            className="absolute top-2 right-2"
+            onClick={(e) => e.stopPropagation()}
+          >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="p-2 bg-white/80 hover:bg-white rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
