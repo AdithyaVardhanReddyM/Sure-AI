@@ -95,3 +95,23 @@ model WidgetSettings {
 
   @@index([agentId])
 }
+
+model Interview {
+  id           String  @id @default(uuid())
+  name         String
+  replicaId    String
+  clerkId      String
+  personaId    String
+  systemPrompt String  @db.Text
+  Context      String? @db.Text
+}
+
+model Candidate {
+  id             String @id @default(uuid())
+  name           String
+  email          String
+  interviewId    String
+  conversationId String
+  resumeText     String @db.Text
+  report         Json?
+}

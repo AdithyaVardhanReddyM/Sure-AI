@@ -1,5 +1,5 @@
 "use client";
-import { Bot, ChevronDown, Database, Settings } from "lucide-react";
+import { Bot, ChevronDown, Database, Settings, UserCheck } from "lucide-react";
 
 import {
   Sidebar,
@@ -13,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
+import { Badge } from "@workspace/ui/components/badge";
 import { UserButton } from "@clerk/nextjs";
 import {
   Collapsible,
@@ -63,6 +64,26 @@ export const DashboardSidebar = () => {
                     <Link href="/dashboard">
                       <Bot className="size-4" />
                       <span>Agents</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+              <SidebarMenu>
+                <SidebarMenuItem className="mb-3">
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/interviews")}
+                    className={cn(
+                      isActive("/interviews") &&
+                        "bg-gradient-to-b from-sidebar-primary to-[#7754ad] text-sidebar-primary-foreground!"
+                    )}
+                  >
+                    <Link href="/interviews">
+                      <UserCheck className="size-4" />
+                      <div className="flex items-center justify-between w-full">
+                        <span>AI Recruiting</span>{" "}
+                        <Badge variant="default">Beta</Badge>
+                      </div>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

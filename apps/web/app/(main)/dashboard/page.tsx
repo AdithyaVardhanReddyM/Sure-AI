@@ -7,3 +7,4 @@ export default async function Page() {
   const { agents } = await getUserAgents(userId || "");
 
   return <DashboardClient agents={agents} />;
+}
