@@ -128,5 +128,6 @@ model EmailTemplates {
   name        String
   agentId     String
   htmlContent String   @db.Text
+  schema      Json?
   createdAt   DateTime @default(now())
 }

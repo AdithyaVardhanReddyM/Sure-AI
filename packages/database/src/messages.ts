@@ -110,10 +110,6 @@ export async function createMessage(
           StripeEnabled: agent?.StripeEnabled,
           SlackEnabled: agent?.SlackEnabled,
           CalUrl: agent?.CalUrl,
-          STRIPE_API_KEY: agent?.STRIPE_API_KEY,
-          SLACK_BOT_TOKEN: agent?.SLACK_BOT_TOKEN,
-          SLACK_TEAM_ID: agent?.SLACK_TEAM_ID,
-          SLACK_CHANNEL_IDS: agent?.SLACK_CHANNEL_IDS,
         }),
       });
 

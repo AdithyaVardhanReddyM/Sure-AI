@@ -13,7 +13,14 @@ export {
 export { createContactSession, validate } from "./contactSessions"; // exports contact session related functions
 export type { ContactSessionMetadataInput } from "./contactSessions";
 export { getLeadsByAgentId } from "./leads"; // exports leads related functions
-export { getEmailTemplatesByAgentId } from "./emailTemplates"; // exports email templates related functions
+export {
+  getEmailTemplatesByAgentId,
+  createEmailTemplate,
+  deleteEmailTemplate,
+  getEmailTemplateById,
+  updateEmailTemplate,
+  generateEmailSchema,
+} from "./emailTemplates"; // exports email templates related functions
 export {
   createConversation,
   getOne,
