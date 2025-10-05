@@ -2,6 +2,14 @@
 
 Sure AI is a comprehensive platform that empowers businesses to deploy intelligent customer support agents directly on their websites through an embeddable widget. With advanced AI capabilities, seamless integrations, and powerful management tools, Sure AI transforms customer interactions into efficient, personalized experiences.
 
+## Demo
+
+<div align="center">
+
+[![Sure AI Demo](https://img.youtube.com/vi/OwQi4XXJnPI/0.jpg)](https://www.youtube.com/watch?v=OwQi4XXJnPI)
+
+</div>
+
 ## Tech Stack
 
 ![Tech Stack](assets/techStack.png)
