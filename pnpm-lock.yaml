@@ -199,6 +199,9 @@ importers:
         specifier: 3.25.67
         version: 3.25.67
     devDependencies:
+      '@prisma/nextjs-monorepo-workaround-plugin':
+        specifier: 5.21.0
+        version: 5.21.0
       '@types/node':
         specifier: ^20.19.9
         version: 20.19.9
