@@ -53,9 +53,10 @@ export async function createMessage(
 
     try {
       const webAppUrl =
-        process.env.NEXT_PUBLIC_WEB_APP_URL || "http://localhost:3000";
+        process.env.NEXT_PUBLIC_WEB_APP_URL || "https://sure-ai.vercel.app";
       const widgetAppUrl =
-        process.env.NEXT_PUBLIC_WIDGET_APP_URL || "http://localhost:3001";
+        process.env.NEXT_PUBLIC_WIDGET_APP_URL ||
+        "https://sure-ai-widget.vercel.app";
 
       const payload = {
         type: "new_message",
@@ -132,9 +133,10 @@ export async function createMessage(
 
       try {
         const webAppUrl =
-          process.env.NEXT_PUBLIC_WEB_APP_URL || "http://localhost:3000";
+          process.env.NEXT_PUBLIC_WEB_APP_URL || "https://sure-ai.vercel.app";
         const widgetAppUrl =
-          process.env.NEXT_PUBLIC_WIDGET_APP_URL || "http://localhost:3001";
+          process.env.NEXT_PUBLIC_WIDGET_APP_URL ||
+          "https://sure-ai-widget.vercel.app";
 
         const payload = {
           type: "new_message",
@@ -202,7 +204,7 @@ export async function createMessageDashboard(
 
     // Notify the widget app about the new message for real-time updates
     try {
-      const widgetAppUrl = "http://localhost:3001";
+      const widgetAppUrl = "https://sure-ai-widget.vercel.app";
 
       // Send event for the new message
       await fetch(`${widgetAppUrl}/api/events/messages`, {

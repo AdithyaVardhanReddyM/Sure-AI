@@ -113,7 +113,7 @@ export default function TakeInterviewClient({
           replica_id: interview.replicaId,
           persona_id: interview.personaId,
           conversational_context: `Resume text: ${resumeText}`,
-          callback_url: "https://056654210103.ngrok-free.app/api/events/tavus",
+          callback_url: "https://sure-ai.vercel.app/api/events/tavus",
         }),
       });
 

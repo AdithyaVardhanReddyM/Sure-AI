@@ -136,7 +136,7 @@ const Page = () => {
                           1. Copy the following code
                         </h3>
                         <div className="bg-gray-100 p-3 rounded-md font-mono text-sm">
-                          {`<script data-agent-id="${agentId}"></script>`}
+                          {`<script src="https://sure-ai-widget.vercel.app/widget.js" data-agent-id="${agentId}"></script>`}
                         </div>
                         <Button
                           size="sm"

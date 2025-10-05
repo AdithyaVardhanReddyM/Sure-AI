@@ -71,7 +71,7 @@ export async function createConversation(
   // Notify the web app about the new conversation for real-time updates
   try {
     const webAppUrl =
-      process.env.NEXT_PUBLIC_WEB_APP_URL || "http://localhost:3000";
+      process.env.NEXT_PUBLIC_WEB_APP_URL || "https://sure-ai.vercel.app";
 
     await fetch(`${webAppUrl}/api/events/conversations`, {
       method: "POST",
