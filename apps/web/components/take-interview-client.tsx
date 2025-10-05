@@ -118,7 +118,8 @@ export default function TakeInterviewClient({
       });
 
       if (!response.ok) {
-        throw new Error(`Tavus API error: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`Tavus API error: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
@@ -143,7 +144,9 @@ export default function TakeInterviewClient({
       }
     } catch (error) {
       console.error("Error starting interview:", error);
-      alert("An error occurred. Please try again.");
+      alert(
+        `An error occurred: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     } finally {
       setIsStarting(false);
     }
