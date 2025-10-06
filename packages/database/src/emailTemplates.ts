@@ -113,7 +113,7 @@ export async function updateEmailTemplate(
 export async function generateEmailSchema(prompt: string) {
   try {
     const response = await fetch(
-      "https://sure-widget-backend.onrender.com/generate-email-schema",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/generate-email-schema`,
       {
         method: "POST",
         headers: {

@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
     // Send request to localhost:8000/process-file
     const response = await fetch(
-      "https://sure-widget-backend.onrender.com/process-file",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/process-file`,
       {
         method: "POST",
         headers: {

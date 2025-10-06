@@ -1,5 +1,7 @@
 ![Logo](assets/logo.png)
 
+> **⚠️ Disclaimer**: In the latest commit (fix: backend url exposed), no major code changes were made. The backend URL, which was previously hardcoded and exposed in the codebase, has been moved to environment variables (`NEXT_PUBLIC_BACKEND_URL`) for better security and configuration management.
+
 Sure AI is a comprehensive platform that empowers businesses to deploy intelligent customer support agents directly on their websites through an embeddable widget. With advanced AI capabilities, seamless integrations, and powerful management tools, Sure AI transforms customer interactions into efficient, personalized experiences.
 
 ## Demo

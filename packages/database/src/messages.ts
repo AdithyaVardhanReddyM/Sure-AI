@@ -100,7 +100,7 @@ export async function createMessage(
 
       // Make POST call to AI service with full history
       const aiResponse = await fetch(
-        "https://sure-widget-backend.onrender.com/chat",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/chat`,
         {
           method: "POST",
           headers: {
